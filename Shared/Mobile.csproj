@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{140EF309-948D-45C4-9031-FAAD03BCBD53}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>DrunkAudible.Mobile</RootNamespace>
+    <AssemblyName>DrunkAudible.Models</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Models\AudioEpisode.cs" />
+    <Compile Include="Models\AudioSeries.cs" />
+    <Compile Include="Models\Author.cs" />
+    <Compile Include="Models\User.cs" />
+    <Compile Include="Data\SQLite.cs" />
+    <Compile Include="Helpers\Gravatar.cs" />
+    <Compile Include="Helpers\ImageDownloader.cs" />
+    <Compile Include="Helpers\MD5.cs" />
+    <Compile Include="Helpers\ThrottledHttp.cs" />
+    <Compile Include="Helpers\ByteArraySerializer.cs" />
+    <Compile Include="Data\DatabaseInitializer.cs" />
+    <Compile Include="Models\JoinTables.cs" />
+    <Compile Include="Data\ObjectRelationalMapping.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="Data\" />
+    <Folder Include="Helpers\" />
+  </ItemGroup>
+</Project>
