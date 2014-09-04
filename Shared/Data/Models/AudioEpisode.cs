@@ -1,11 +1,13 @@
-﻿using System;
+﻿// 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
+
+using System;
 using System.IO;
 using SQLite;
 using System.Collections.Generic;
 
-namespace DrunkAudible.Models
+namespace DrunkAudible.Data.Models
 {
-    public class AudioEpisode
+    public class AudioEpisode : IAudioListViewElement
     {
         [Ignore]
         public IEnumerable<Author> Authors { get; set; }
@@ -27,7 +29,7 @@ namespace DrunkAudible.Models
         public double Price { get; set; }
 
         [Ignore]
-        public AudioSeries Series { get; set; }
+        public Album Album { get; set; }
 
         public String Title { get; set; }
 
@@ -41,7 +43,6 @@ namespace DrunkAudible.Models
 
         public String LocalURL { get; set; }
 
-        [Ignore]
         public bool IsDownloaded {
             get {
                 return File.Exists (LocalURL);

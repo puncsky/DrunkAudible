@@ -1,8 +1,10 @@
+// 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
+
 using System;
 using System.Collections.Generic;
 using SQLite;
 
-namespace DrunkAudible.Models
+namespace DrunkAudible.Data.Models
 {
     public class Author
     {
@@ -17,7 +19,7 @@ namespace DrunkAudible.Models
         public String Name { get; set; }
 
         [Ignore]
-        public IEnumerable<AudioSeries> Portfolio { get; set; }
+        public IEnumerable<Album> Portfolio { get; set; }
     }
 }
 

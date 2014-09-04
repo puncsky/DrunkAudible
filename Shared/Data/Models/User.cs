@@ -1,8 +1,10 @@
-﻿using System;
+﻿// 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
+
+using System;
 using SQLite;
 using System.Collections.Generic;
 
-namespace DrunkAudible.Models
+namespace DrunkAudible.Data.Models
 {
     public class User
     {
@@ -41,7 +43,7 @@ namespace DrunkAudible.Models
         public String ZipCode { get; set; }
 
         [Ignore]
-        public IEnumerable<AudioSeries> SeriesFaves { get; set; }
+        public IEnumerable<Album> AlbumFaves { get; set; }
 
         [Ignore]
         public IEnumerable<AudioEpisode> EpisodeFaves { get; set; }

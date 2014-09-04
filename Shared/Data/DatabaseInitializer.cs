@@ -1,8 +1,11 @@
-﻿using System;
+﻿// 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
+
+using System;
 using System.Collections.Generic;
-using DrunkAudible.Models;
-using DrunkAudible.Models.JoinTables;
 using SQLite;
+using System.Linq;
+using DrunkAudible.Data.Models;
+using DrunkAudible.Data.Models.JoinTables;
 
 namespace DrunkAudible.Data
 {
@@ -35,20 +38,24 @@ namespace DrunkAudible.Data
             }
         }
 
-        public static AudioSeries[] SeriesSamples {
+        public static Album[] AlbumSamples {
             get {
                 return new[] {
-                    new AudioSeries {
+                    new Album {
                         ID = 1,
                         Title = "天龙八部",
+                        Authors = new[] { new Author { Name = "金庸" } },
+                        Narrator = "倪清",
                     },
-                    new AudioSeries {
+                    new Album {
                         ID = 2,
                         Title = "冬吴相对论",
+                        Authors = new[] { new Author { Name = "梁冬" }, new Author { Name = "吴伯凡" } },
                     },
-                    new AudioSeries {
+                    new Album {
                         ID = 3,
                         Title = "笑傲江湖",
+                        Authors = new[] { new Author { Name = "金庸" } },
                     },
                 };
             }
@@ -58,22 +65,32 @@ namespace DrunkAudible.Data
             get {
                 return new[] {
                     new AudioEpisode {
+                        ID = 1,
                         Title = "青衫磊落险峰行",
                         PartIndex = 1,
                         RemoteURL = "http://115.28.189.40/tingguo/novel/tlbb/tlbb1.flab",
                         Duration = 5589.468,
+                        Authors = new[] { new Author { ID = 1, Name = "金庸" } },
+                        Narrator = "倪清",
+                        Album = AlbumSamples.Where (s => s.Title == "天龙八部").FirstOrDefault (),
                     },
                     new AudioEpisode {
+                        ID = 2,
                         PartIndex = 451,
                         Title = "财商教育",
                         RemoteURL = "http://fruitlab.net/tinggo/tuokouxiu/dwxdl/dwxdl_451.flab",
-                        Duration = 1509.222
+                        Duration = 1509.222,
+                        Authors = new[] {
+                            new Author { ID = 3, Name = "梁冬" },
+                            new Author { ID = 4, Name = "吴伯凡" }
+                        },
+                        Album = AlbumSamples.Where (s => s.Title == "冬吴相对论").FirstOrDefault (),
                     },
                 };
             }
         }
 
-        public static User[] SampleUsers {
+        public static User[] UserSamples {
             get {
                 return new[] {
                     new User {
@@ -90,38 +107,38 @@ namespace DrunkAudible.Data
 
         // JoinTables
 
-        public static AudioEpisodesToSeries[] SampleAudioEpisodesToSeries {
+        public static AudioEpisodesToAlbum[] AudioEpisodesToAlbumSamples {
             get {
                 return new[] {
-                    new AudioEpisodesToSeries {
+                    new AudioEpisodesToAlbum {
                         EpisodeID = 1,
-                        SeriesID = 1,
+                        AlbumID = 1,
                     },
-                    new AudioEpisodesToSeries {
+                    new AudioEpisodesToAlbum {
                         EpisodeID = 2,
-                        SeriesID = 2,
+                        AlbumID = 2,
                     },
                 };
             }
         }
 
-        public static AudioSeriesToAuthors[] SampleAudioSeriesToAuthors {
+        public static AlbumToAuthors[] AlbumToAuthorsSamples {
             get {
                 return new[] {
-                    new AudioSeriesToAuthors {
-                        SeriesID = 1,
+                    new AlbumToAuthors {
+                        AlbumID = 1,
                         AuthorID = 1,
                     },
-                    new AudioSeriesToAuthors {
-                        SeriesID = 2,
+                    new AlbumToAuthors {
+                        AlbumID = 2,
                         AuthorID = 3,
                     },
-                    new AudioSeriesToAuthors {
-                        SeriesID = 2,
+                    new AlbumToAuthors {
+                        AlbumID = 2,
                         AuthorID = 4,
                     },
-                    new AudioSeriesToAuthors {
-                        SeriesID = 3,
+                    new AlbumToAuthors {
+                        AlbumID = 3,
                         AuthorID = 1,
                     },
                 };
@@ -132,8 +149,9 @@ namespace DrunkAudible.Data
 
         public static void Initialize(SQLiteConnection database) {
             AddAuthors (database);
-            AddSeries (database);
+            AddAlbum (database);
             AddEpisodes (database);
+            AddUsers (database);
         }
 
         private static void AddAuthors(SQLiteConnection database) {
@@ -144,11 +162,11 @@ namespace DrunkAudible.Data
             }
         }
 
-        private static void AddSeries(SQLiteConnection database) {
-            database.CreateTable<AudioSeries> ();
+        private static void AddAlbum(SQLiteConnection database) {
+            database.CreateTable<Album> ();
 
-            if (database.Table<AudioSeries> ().Count () == 0) {
-                database.InsertAll (SeriesSamples);
+            if (database.Table<Album> ().Count () == 0) {
+                database.InsertAll (AlbumSamples);
             }
         }
 
@@ -157,6 +175,14 @@ namespace DrunkAudible.Data
 
             if (database.Table<AudioEpisode> ().Count () == 0) {
                 database.InsertAll (EpisodeSamples);
+            }
+        }
+
+        private static void AddUsers(SQLiteConnection database) {
+            database.CreateTable<User> ();
+
+            if (database.Table<User> ().Count () == 0) {
+                database.InsertAll (UserSamples);
             }
         }
     }

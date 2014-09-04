@@ -1,11 +1,13 @@
-﻿using System;
+﻿// 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
+
+using System;
 using System.Collections.Generic;
 using SQLite;
 using DrunkAudible.Helpers;
 
-namespace DrunkAudible.Models
+namespace DrunkAudible.Data.Models
 {
-    public class AudioSeries
+    public class Album : IAudioListViewElement
     {
         [Ignore]
         public IEnumerable<Author> Authors { get; set; }
@@ -21,6 +23,9 @@ namespace DrunkAudible.Models
         public int ID { get; set; }
 
         public String Title { get; set; }
+
+        [Ignore]
+        public IEnumerable<AudioEpisode> Episodes { get; set; }
     }
 }
 

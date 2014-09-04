@@ -1,7 +1,9 @@
-﻿using System;
+﻿// 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
+
+using System;
 using SQLite;
 
-namespace DrunkAudible.Models.JoinTables
+namespace DrunkAudible.Data.Models.JoinTables
 {
     // All the Join Tables should only talk to ObjectRelationalMapping
 
@@ -16,33 +18,41 @@ namespace DrunkAudible.Models.JoinTables
     }
 
     // Must update this
-    [Table ("JoinTable_AudioEpisodesToSeries")]
-    public class AudioEpisodesToSeries
+    [Table ("JoinTable_AudioEpisodesToAlbum")]
+    public class AudioEpisodesToAlbum
     {
+        [PrimaryKey]
+        [AutoIncrement]
+        public int ID { get; set; }
+
         public int EpisodeID { get; set; }
 
-        public int SeriesID { get; set; }
+        public int AlbumID { get; set; }
 
         public DateTime LastUpdateTime { get; set; }
     }
 
     // Must update this
-    [Table ("JoinTable_AudioSeriesToAuthors")]
-    public class AudioSeriesToAuthors
+    [Table ("JoinTable_AlbumToAuthors")]
+    public class AlbumToAuthors
     {
-        public int SeriesID { get; set; }
+        [PrimaryKey]
+        [AutoIncrement]
+        public int ID { get; set; }
+
+        public int AlbumID { get; set; }
 
         public int AuthorID { get; set; }
 
         public DateTime LastUpdateTime { get; set; }
     }
 
-    [Table ("JoinTable_UsersToFaveSeries")]
-    public class UsersToFaveSeries
+    [Table ("JoinTable_UsersToFaveAlbum")]
+    public class UsersToFaveAlbum
     {
         public int UserID { get; set; }
 
-        public int SeriesID { get; set; }
+        public int AlbumID { get; set; }
 
         public DateTime LastUpdateTime { get; set; }
     }

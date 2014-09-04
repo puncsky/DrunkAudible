@@ -11,7 +11,6 @@
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Data\" />
     <Folder Include="$(MSBuildThisFileDirectory)Helpers\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Models\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Data\DatabaseInitializer.cs" />
@@ -22,11 +21,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageDownloader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\MD5.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ThrottledHttp.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\AudioEpisode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\AudioSeries.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Author.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Faves.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\JoinTables.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\User.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Models\AudioEpisode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Models\AudioSeries.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Models\Author.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Models\Faves.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Models\IAudioListViewElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Models\JoinTables.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Models\User.cs" />
   </ItemGroup>
 </Project>

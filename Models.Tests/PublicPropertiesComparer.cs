@@ -1,10 +1,14 @@
-﻿using System;
+﻿// 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
+
+using System;
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Reflection;
+using NUnit.Framework;
 
 namespace DrunkAudible.Models.Tests
 {
-    public class PublicPropertiesComparer<T>  : IComparer
+    public class PublicPropertiesComparer<T> : IComparer
         where T : class
     {
         string[] _ignore;
@@ -21,15 +25,15 @@ namespace DrunkAudible.Models.Tests
             var typedTo = to as T;
             var typedSelf = self as T;
             if (typedSelf != null && typedTo != null) {
-                Collection<string> ignoreList = new Collection<string> (_ignore);
-                foreach (System.Reflection.PropertyInfo pi in _type.GetProperties(
+                var ignoreList = new Collection<string> (_ignore);
+                foreach (PropertyInfo propertyInfo in _type.GetProperties(
                     System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)) {
-                    if (!ignoreList.Contains (pi.Name)) {
-                        object selfValue = _type.GetProperty (pi.Name).GetValue (typedSelf, null);
-                        object toValue = _type.GetProperty (pi.Name).GetValue (typedTo, null);
+                    if (!ignoreList.Contains (propertyInfo.Name)) {
+                        var selfValue = _type.GetProperty (propertyInfo.Name).GetValue (typedSelf, null);
+                        var toValue = _type.GetProperty (propertyInfo.Name).GetValue (typedTo, null);
 
                         if (selfValue != toValue && (selfValue == null || !selfValue.Equals (toValue))) {
-                            return 1;
+                            throw new AssertionException (propertyInfo.Name + "is not equal.");
                         }
                     }
                 }
@@ -38,7 +42,7 @@ namespace DrunkAudible.Models.Tests
             if (Object.Equals(typedSelf, typedTo)) {
                 return 0;
             } else {
-                return 1;
+                throw new AssertionException ("One reference is null but the other is not.");
             }
         }
     }
