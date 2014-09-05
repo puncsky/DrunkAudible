@@ -1,10 +1,8 @@
 ﻿// 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
-using System;
 using NUnit.Framework;
 using DrunkAudible.Data;
 using DrunkAudible.Data.Models;
-using DrunkAudible.Data.Models.JoinTables;
 using System.Linq;
 
 namespace DrunkAudible.Models.Tests

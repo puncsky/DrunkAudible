@@ -14,6 +14,8 @@ namespace DrunkAudible.Data
     {
         readonly SQLiteConnection _database;
 
+        Album[] _albums;
+
         public ObjectRelationalMapping()
         {
             _database = new SQLiteConnection (DatabasePath);
@@ -90,16 +92,26 @@ namespace DrunkAudible.Data
             _database.DeleteAll<User> ();
         }
 
+        public Album[] AlbumsCache { 
+            get {
+                if (_albums == null) {
+                    _albums = Albums;
+                }
+
+                return _albums;
+            }
+        }
+
         public Album[] Albums { 
             get {
-                // Since unsupported property "Authors" cannot be assigned directly via Table<Album> (),
-                // create an array copy of the albums.
                 var albums = Database.Table<Album> ().ToArray<Album> ();
 
                 LoadAuthors (albums);
                 LoadEpisodes (albums);
 
-                return albums;
+                _albums = albums;
+
+                return _albums;
             }
         }
 

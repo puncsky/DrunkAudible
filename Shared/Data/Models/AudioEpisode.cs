@@ -28,9 +28,6 @@ namespace DrunkAudible.Data.Models
 
         public double Price { get; set; }
 
-        [Ignore]
-        public Album Album { get; set; }
-
         public String Title { get; set; }
 
         [PrimaryKey]

@@ -1,18 +1,16 @@
 ﻿// 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
-using System;
-using System.Collections.Generic;
-using SQLite;
 using System.Linq;
+using DrunkAudible.Data;
+using NUnit.Framework;
 using DrunkAudible.Data.Models;
-using DrunkAudible.Data.Models.JoinTables;
+using SQLite;
 
-namespace DrunkAudible.Data
+namespace DrunkAudible.Models.Tests
 {
-    public static class DatabaseInitializer
+    [TestFixture]
+    public class DatabaseTests
     {
-        #region Sample Data
-
         // Models
 
         public static Author[] AuthorSamples {
@@ -44,18 +42,36 @@ namespace DrunkAudible.Data
                     new Album {
                         ID = 1,
                         Title = "天龙八部",
-                        Authors = new[] { new Author { Name = "金庸" } },
+                        Authors = new[] { new Author { ID = 1, Name = "金庸" } },
                         Narrator = "倪清",
+                        Episodes = new[] {
+                            new AudioEpisode {
+                                ID = 1,
+                                Title = "青衫磊落险峰行",
+                                PartIndex = 1,
+                                RemoteURL = "http://115.28.189.40/tingguo/novel/tlbb/tlbb1.flab",
+                                Duration = 5589.468,
+                            },
+                        },
                     },
                     new Album {
                         ID = 2,
                         Title = "冬吴相对论",
-                        Authors = new[] { new Author { Name = "梁冬" }, new Author { Name = "吴伯凡" } },
+                        Authors = new[] { new Author { ID = 3, Name = "梁冬" }, new Author { ID = 4, Name = "吴伯凡" } },
+                        Episodes = new[] {
+                            new AudioEpisode {
+                                ID = 2,
+                                PartIndex = 451,
+                                Title = "财商教育",
+                                RemoteURL = "http://fruitlab.net/tinggo/tuokouxiu/dwxdl/dwxdl_451.flab",
+                                Duration = 1509.222,
+                            },
+                        },
                     },
                     new Album {
                         ID = 3,
                         Title = "笑傲江湖",
-                        Authors = new[] { new Author { Name = "金庸" } },
+                        Authors = new[] { new Author { ID = 1, Name = "金庸" } },
                     },
                 };
             }
@@ -72,7 +88,6 @@ namespace DrunkAudible.Data
                         Duration = 5589.468,
                         Authors = new[] { new Author { ID = 1, Name = "金庸" } },
                         Narrator = "倪清",
-                        Album = AlbumSamples.Where (s => s.Title == "天龙八部").FirstOrDefault (),
                     },
                     new AudioEpisode {
                         ID = 2,
@@ -84,7 +99,6 @@ namespace DrunkAudible.Data
                             new Author { ID = 3, Name = "梁冬" },
                             new Author { ID = 4, Name = "吴伯凡" }
                         },
-                        Album = AlbumSamples.Where (s => s.Title == "冬吴相对论").FirstOrDefault (),
                     },
                 };
             }
@@ -105,56 +119,7 @@ namespace DrunkAudible.Data
             }
         }
 
-        // JoinTables
-
-        public static AudioEpisodesToAlbum[] AudioEpisodesToAlbumSamples {
-            get {
-                return new[] {
-                    new AudioEpisodesToAlbum {
-                        EpisodeID = 1,
-                        AlbumID = 1,
-                    },
-                    new AudioEpisodesToAlbum {
-                        EpisodeID = 2,
-                        AlbumID = 2,
-                    },
-                };
-            }
-        }
-
-        public static AlbumToAuthors[] AlbumToAuthorsSamples {
-            get {
-                return new[] {
-                    new AlbumToAuthors {
-                        AlbumID = 1,
-                        AuthorID = 1,
-                    },
-                    new AlbumToAuthors {
-                        AlbumID = 2,
-                        AuthorID = 3,
-                    },
-                    new AlbumToAuthors {
-                        AlbumID = 2,
-                        AuthorID = 4,
-                    },
-                    new AlbumToAuthors {
-                        AlbumID = 3,
-                        AuthorID = 1,
-                    },
-                };
-            }
-        }
-
-        #endregion
-
-        public static void Initialize(SQLiteConnection database) {
-            AddAuthors (database);
-            AddAlbum (database);
-            AddEpisodes (database);
-            AddUsers (database);
-        }
-
-        private static void AddAuthors(SQLiteConnection database) {
+        static void AddAuthors(SQLiteConnection database) {
             database.CreateTable<Author> ();
 
             if (database.Table<Author> ().Count () == 0) {
@@ -162,7 +127,7 @@ namespace DrunkAudible.Data
             }
         }
 
-        private static void AddAlbum(SQLiteConnection database) {
+        static void AddAlbum(SQLiteConnection database) {
             database.CreateTable<Album> ();
 
             if (database.Table<Album> ().Count () == 0) {
@@ -170,7 +135,7 @@ namespace DrunkAudible.Data
             }
         }
 
-        private static void AddEpisodes(SQLiteConnection database) {
+        static void AddEpisodes(SQLiteConnection database) {
             database.CreateTable<AudioEpisode> ();
 
             if (database.Table<AudioEpisode> ().Count () == 0) {
@@ -178,7 +143,7 @@ namespace DrunkAudible.Data
             }
         }
 
-        private static void AddUsers(SQLiteConnection database) {
+        static void AddUsers(SQLiteConnection database) {
             database.CreateTable<User> ();
 
             if (database.Table<User> ().Count () == 0) {
