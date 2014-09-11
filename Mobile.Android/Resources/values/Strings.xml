@@ -3,4 +3,11 @@
     <string name="by">By </string>
     <string name="narrated_by">Narrated by </string>
     <string name="app_name">DrunkAudible</string>
+
+    <string name="Hello">Hello World, Click Me!</string>
+    <string name="ApplicationName">BackgroundStreamingAudio</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="stop">Stop</string>
+    <string name="mp3_url">Enter mp3 url</string>
 </resources>

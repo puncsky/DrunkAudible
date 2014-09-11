@@ -50,6 +50,12 @@
     <Compile Include="AudioListAdapter.cs" />
     <Compile Include="EpisodesListActivity.cs" />
     <Compile Include="DatabaseSingleton.cs" />
+    <Compile Include="AudioPlayerActivity.cs" />
+    <Compile Include="StreamingBackgroundService.cs" />
+    <Compile Include="MusicBroadcastReceiver.cs" />
+    <Compile Include="PeriodicTaskFactory.cs" />
+    <Compile Include="StreamingBackgroundServiceBinder.cs" />
+    <Compile Include="StreamingBackgroundServiceConnection.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -61,7 +67,24 @@
     <AndroidResource Include="Resources\values\Strings.xml" />
     <AndroidResource Include="Resources\drawable\Icon.png" />
     <AndroidResource Include="Resources\drawable\ic_launcher.png" />
+    <AndroidResource Include="Resources\layout\AudioPlayer.axml" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_av_fast_forward.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_av_next.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_av_pause.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_av_play.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_av_previous.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_av_repeat.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_av_rewind.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_av_shuffle.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_av_stop.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_stat_av_play_over_video.png" />
+    <AndroidResource Include="Resources\values\Colors.xml" />
+    <AndroidResource Include="Resources\values\Styles.xml" />
   </ItemGroup>
   <Import Project="..\Shared\Shared.projitems" Label="Shared" Condition="Exists('..\Shared\Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Resources\drawable-hdpi\" />
+  </ItemGroup>
 </Project>

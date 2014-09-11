@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:padding="6dip">
     <ImageView
-        android:id="@+id/icon"
+        android:id="@+id/Icon"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:layout_alignParentBottom="true"
@@ -20,7 +20,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_alignWithParentIfMissing="true"
-        android:layout_toRightOf="@id/icon"
+        android:layout_toRightOf="@id/Icon"
         android:gravity="center_vertical"
         android:text="AudioListViewElement Title"
         android:textSize="16sp" />
@@ -31,7 +31,7 @@
         android:layout_below="@+id/Title"
         android:layout_marginRight="1sp"
         android:ellipsize="marquee"
-        android:layout_toRightOf="@id/icon"
+        android:layout_toRightOf="@id/Icon"
         android:text="@string/by"
         android:textSize="7sp" />
     <TextView
@@ -50,7 +50,7 @@
         android:layout_below="@id/By"
         android:layout_marginRight="1sp"
         android:ellipsize="marquee"
-        android:layout_toRightOf="@id/icon"
+        android:layout_toRightOf="@id/Icon"
         android:text="@string/narrated_by"
         android:textSize="7sp" />
     <TextView

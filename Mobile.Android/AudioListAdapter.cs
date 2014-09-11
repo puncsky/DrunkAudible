@@ -1,4 +1,4 @@
-﻿// 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
+﻿// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
 using System;
 using Android.Widget;
@@ -9,42 +9,44 @@ using DrunkAudible.Data.Models;
 
 namespace Mobile.Android
 {
-    public class AudioListAdapter : BaseAdapter {
-        private readonly IAudioListViewElement[] _audios;
-        private readonly Context _context;
+    public class AudioListAdapter : BaseAdapter
+    {
+        readonly IAudioListViewElement[] _audios;
+        readonly Context _context;
 
-        private class ViewHolder : Java.Lang.Object {
-            // TODO public ImageView Icon;
-            public TextView Title;
-            public TextView Authors;
-            public TextView NarratedBy;
-            public TextView Narrator;
-        }
-
-        public AudioListAdapter(Context context, IAudioListViewElement[] audios) {
+        public AudioListAdapter(Context context, IAudioListViewElement[] audios)
+        {
             _audios = audios;
             _context = context;
         }
 
-        public override int Count {
-            get {
+        public override int Count
+        {
+            get
+            {
                 return _audios.Length;
             }
         }
 
-        public override Java.Lang.Object GetItem(int i) {
+        public override Java.Lang.Object GetItem(int position)
+        {
             return null;
         }
 
-        public override long GetItemId(int i) {
+        public override long GetItemId(int i)
+        {
             return i;
         }
 
-        public override View GetView(int position, View convertView, ViewGroup parent) {
+        public override View GetView(int position, View convertView, ViewGroup parent)
+        {
             View rowView;
-            if (convertView != null) {
+            if (convertView != null)
+            {
                 rowView = convertView;
-            } else {
+            }
+            else
+            {
                 LayoutInflater inflater = (LayoutInflater)_context.GetSystemService (Context.LayoutInflaterService);
                 rowView = inflater.Inflate (Resource.Layout.Main, parent, false);
 
@@ -66,12 +68,22 @@ namespace Mobile.Android
             tag.Title.Text = _audios [position].Title;
             tag.Authors.Text = String.Join (", ", _audios [position].Authors.Select (a => a.Name));
             var narrator = _audios [position].Narrator;
-            if (String.IsNullOrEmpty (narrator)) {
+            if (String.IsNullOrEmpty (narrator))
+            {
                 tag.NarratedBy.Text = String.Empty;
             }
             tag.Narrator.Text = narrator;
 
             return rowView;
+        }
+
+        class ViewHolder : Java.Lang.Object
+        {
+            // TODO public ImageView Icon;
+            public TextView Title;
+            public TextView Authors;
+            public TextView NarratedBy;
+            public TextView Narrator;
         }
     }
 }
