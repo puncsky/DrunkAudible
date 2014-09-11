@@ -3,7 +3,7 @@
 using Android.Content;
 using Android.OS;
 
-namespace Mobile.Android
+namespace DrunkAudible.Mobile.Android
 {
     /// <summary>
     /// Connection to bind to the binder

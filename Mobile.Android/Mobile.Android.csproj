@@ -6,7 +6,7 @@
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProjectGuid>{12B8E617-F16F-4C69-BE39-548C546A5489}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Mobile.Android</RootNamespace>
+    <RootNamespace>DrunkAudible.Mobile.Android</RootNamespace>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <AndroidResgenClass>Resource</AndroidResgenClass>

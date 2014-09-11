@@ -1,11 +1,11 @@
-﻿// 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
+﻿// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
 using NUnit.Framework;
 using DrunkAudible.Data;
 using DrunkAudible.Data.Models;
 using System.Linq;
 
-namespace DrunkAudible.Models.Tests
+namespace DrunkAudible.Mobile.Tests
 {
     [TestFixture]
     public class ObjectRelationalMappingTests

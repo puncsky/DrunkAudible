@@ -8,7 +8,7 @@ using Android.OS;
 using Android.Util;
 using Android.Widget;
 
-namespace Mobile.Android
+namespace DrunkAudible.Mobile.Android
 {
     [Activity (
         Label = "BackgroundStreamingAudio",

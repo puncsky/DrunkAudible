@@ -9,7 +9,7 @@ using Android.OS;
 using Android.Util;
 using Net = Android.Net;
 
-namespace Mobile.Android
+namespace DrunkAudible.Mobile.Android
 {
     [Service]
     [IntentFilter (new[] { ACTION_PLAY, ACTION_PAUSE, ACTION_STOP })]

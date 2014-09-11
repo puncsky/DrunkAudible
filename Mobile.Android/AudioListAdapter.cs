@@ -7,7 +7,7 @@ using Android.Views;
 using System.Linq;
 using DrunkAudible.Data.Models;
 
-namespace Mobile.Android
+namespace DrunkAudible.Mobile.Android
 {
     public class AudioListAdapter : BaseAdapter
     {

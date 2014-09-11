@@ -2,7 +2,7 @@
 
 using Android.OS;
 
-namespace Mobile.Android
+namespace DrunkAudible.Mobile.Android
 {
     public class StreamingBackgroundServiceBinder : Binder
     {

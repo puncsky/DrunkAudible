@@ -4,7 +4,7 @@ using Android.App;
 using Android.Content;
 using Android.Media;
 
-namespace Mobile.Android
+namespace DrunkAudible.Mobile.Android
 {
     /// <summary>
     /// This is a simple intent receiver that is used to stop playback

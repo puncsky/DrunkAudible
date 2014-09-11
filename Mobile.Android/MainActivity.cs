@@ -7,7 +7,7 @@ using Android.OS;
 using Android.Widget;
 using DrunkAudible.Data.Models;
 
-namespace Mobile.Android
+namespace DrunkAudible.Mobile.Android
 {
     [Activity (Label = "Faves", MainLauncher = true, Icon = "@drawable/icon")]
     public class MainActivity : ListActivity

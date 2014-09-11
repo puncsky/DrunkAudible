@@ -7,7 +7,7 @@ using Android.Content;
 using Android.OS;
 using Android.Widget;
 
-namespace Mobile.Android
+namespace DrunkAudible.Mobile.Android
 {
     [Activity (Label = "EpisodesListViewActivity")]
     public class EpisodesListActivity : ListActivity

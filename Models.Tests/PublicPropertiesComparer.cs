@@ -1,4 +1,4 @@
-﻿// 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
+﻿// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
 using System;
 using System.Collections;
@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 using NUnit.Framework;
 
-namespace DrunkAudible.Models.Tests
+namespace DrunkAudible.Mobile.Tests
 {
     public class PublicPropertiesComparer<T> : IComparer
         where T : class

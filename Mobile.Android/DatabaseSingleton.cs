@@ -4,7 +4,7 @@ using System.Linq;
 using DrunkAudible.Data;
 using DrunkAudible.Data.Models;
 
-namespace Mobile.Android
+namespace DrunkAudible.Mobile.Android
 {
     public static class DatabaseSingleton
     {

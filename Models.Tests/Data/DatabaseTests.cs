@@ -1,12 +1,10 @@
-﻿// 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
+﻿// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
-using System.Linq;
-using DrunkAudible.Data;
 using NUnit.Framework;
 using DrunkAudible.Data.Models;
 using SQLite;
 
-namespace DrunkAudible.Models.Tests
+namespace DrunkAudible.Mobile.Tests
 {
     [TestFixture]
     public class DatabaseTests
