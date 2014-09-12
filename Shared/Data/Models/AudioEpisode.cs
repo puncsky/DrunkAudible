@@ -20,6 +20,8 @@ namespace DrunkAudible.Data.Models
 
         public bool IsPurchased { get; set; }
 
+        public string IconUrl { get; set; }
+
         public DateTime LastUpdateTime { get; set; }
 
         public String Narrator { get; set; }

@@ -12,11 +12,11 @@ namespace DrunkAudible.Mobile.Android
     [Activity (Label = "EpisodesListViewActivity")]
     public class EpisodesListActivity : ListActivity
     {
-        AudioListAdapter _adapter;
-
         protected override void OnCreate (Bundle savedInstanceState)
         {
             base.OnCreate (savedInstanceState);
+
+            SetContentView (Resource.Layout.AudioListView);
 
             var albumID = Intent.GetIntExtra ("AlbumID", -1);
             var album = DatabaseSingleton.Orm.Albums.FirstOrDefault (a => a.ID == albumID);
@@ -29,9 +29,8 @@ namespace DrunkAudible.Mobile.Android
                     e.Narrator = album.Narrator;
                 }
             }
-            _adapter = new AudioListAdapter (this, episodes);
 
-            ListAdapter = _adapter;
+            ListAdapter = new AudioListAdapter (this, episodes);
 
             ListView.ItemClick += OnAlbumItemClicked_;
         }

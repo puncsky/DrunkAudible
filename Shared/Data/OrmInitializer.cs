@@ -21,6 +21,7 @@ namespace DrunkAudible.Data
                         Title = "天龙八部",
                         Authors = new[] { new Author { ID = 1, Name = "金庸" } },
                         Narrator = "倪清",
+                        IconUrl = "https://www.google.com/images/srpr/logo11w.png",
                         Episodes = new[] {
                             new AudioEpisode {
                                 ID = 1,

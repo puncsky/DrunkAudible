@@ -18,6 +18,8 @@ namespace DrunkAudible.Data.Models
 
         public String Narrator { get; set; }
 
+        public string IconUrl { get; set; }
+
         [PrimaryKey]
         [AutoIncrement]
         public int ID { get; set; }

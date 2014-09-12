@@ -1,4 +1,4 @@
-// 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
+// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
 using System.Collections.Generic;
 using System;
@@ -14,6 +14,8 @@ namespace DrunkAudible.Data.Models
         IEnumerable<Author> Authors { get; }
 
         String Narrator { get; }
+
+        String IconUrl { get; }
 	}
 }
 

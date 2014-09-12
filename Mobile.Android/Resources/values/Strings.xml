@@ -10,4 +10,6 @@
     <string name="pause">Pause</string>
     <string name="stop">Stop</string>
     <string name="mp3_url">Enter mp3 url</string>
+
+    <string name="NoFavoritesText">You do not have any favorites. Add them by searching for someone.</string>
 </resources>
