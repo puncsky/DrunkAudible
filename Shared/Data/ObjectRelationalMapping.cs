@@ -12,6 +12,8 @@ namespace DrunkAudible.Data
 {
     public class ObjectRelationalMapping
     {
+        public static String DATABASE_FILE_NAME = "DrunkAudible.Mobile.SQLite.db3";
+
         readonly SQLiteConnection _database;
 
         Album[] _albums;
@@ -31,56 +33,56 @@ namespace DrunkAudible.Data
             _database.CreateTable<User> ();
         }
 
-        String DatabasePath {
-            get { 
-                var sqliteFilename = "DrunkAudible.Mobile.SQLite.db3";
-
+        String DatabasePath
+        {
+            get
+            { 
                 #if __IOS__
                 string documentsPath = Environment.GetFolderPath (Environment.SpecialFolder.Personal); // Documents folder
                 string libraryPath = Path.Combine (documentsPath, "..", "Library"); // Library folder
-                var path = Path.Combine(libraryPath, sqliteFilename);
+                var path = Path.Combine(libraryPath, DATABASE_FILE_NAME);
                 #elif __ANDROID__
                 string documentsPath = Environment.GetFolderPath (Environment.SpecialFolder.Personal); // Documents folder
-                var path = Path.Combine(documentsPath, sqliteFilename);
+                var path = Path.Combine (documentsPath, DATABASE_FILE_NAME);
                 #elif WINDOWS_PHONE
-                var path = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, sqliteFilename);
+                var path = Path.Combine(Windows.Storage.ApplicationData.Current.LocalFolder.Path, DATABASE_FILE_NAME);
                 #else
                 string localApplicationData = Environment.CurrentDirectory;
-                var path = Path.Combine(localApplicationData, sqliteFilename);
+                var path = Path.Combine(localApplicationData, DATABASE_FILE_NAME);
                 #endif
 
                 return path;
             }
         }
 
-        public void InsertOrUpdate(Album album) {
+        public void InsertOrUpdate (Album album)
+        {
             Database.CreateTable<Album> ();
             Database.InsertOrReplace (album);
 
             // Update all the related tables, because the Album instance holds the reference to the Authors collection
             // object that cannot be stored directly into the same table.
-            if (album.Authors != null) {
+            if (album.Authors != null)
+            {
                 SaveAlbumAuthors (album.Authors.ToArray (), album.ID);
 
             }
-            if (album.Episodes != null) {
+            if (album.Episodes != null)
+            {
                 SaveAlbumEpisodes (album.Episodes.ToArray (), album.ID);
-
-
             }
         }
 
-        public void InsertOrUpdate(Album[] albums) {
-            foreach (var album in albums) {
+        public void InsertOrUpdate (Album[] albums)
+        {
+            foreach (var album in albums)
+            {
                 InsertOrUpdate (album);
             }
         }
 
-        public void InsertOrUpdate(AudioEpisode episode) {
-
-        }
-
-        public void ClearAll() {
+        public void ClearAll ()
+        {
             _database.DeleteAll<Author> ();
 
             _database.DeleteAll<Album> ();
@@ -92,9 +94,12 @@ namespace DrunkAudible.Data
             _database.DeleteAll<User> ();
         }
 
-        public Album[] AlbumsCache { 
-            get {
-                if (_albums == null) {
+        public Album[] AlbumsCache
+        { 
+            get
+            {
+                if (_albums == null)
+                {
                     _albums = Albums;
                 }
 
@@ -102,8 +107,10 @@ namespace DrunkAudible.Data
             }
         }
 
-        public Album[] Albums { 
-            get {
+        public Album[] Albums
+        { 
+            get
+            {
                 var albums = Database.Table<Album> ().ToArray<Album> ();
 
                 LoadAuthors (albums);
@@ -115,8 +122,10 @@ namespace DrunkAudible.Data
             }
         }
 
-        public SQLiteConnection Database {
-            get {
+        public SQLiteConnection Database
+        {
+            get
+            {
                 return _database;
             }
         }
@@ -126,19 +135,23 @@ namespace DrunkAudible.Data
             // Update related entries in the join table.
             Database.CreateTable<AlbumToAuthors> ();
             var oldEntries = Database.Table<AlbumToAuthors> ().Where (a => a.AlbumID == albumID).ToArray ();
-            foreach (var oldEntry in oldEntries) {
+            foreach (var oldEntry in oldEntries)
+            {
                 Database.Delete (oldEntry);
             }
-            foreach (var author in authors) {
-                Database.Insert (new AlbumToAuthors () {
-                    AlbumID = albumID,
-                    AuthorID = author.ID,
-                });
+            foreach (var author in authors)
+            {
+                Database.Insert (new AlbumToAuthors ()
+                    {
+                        AlbumID = albumID,
+                        AuthorID = author.ID,
+                    });
             }
 
             // Insert or update the related table for the ignored property Author.
             Database.CreateTable<Author> ();
-            foreach (var author in authors) {
+            foreach (var author in authors)
+            {
                 Database.InsertOrReplace (author);
             }
         }
@@ -148,18 +161,22 @@ namespace DrunkAudible.Data
             // Update related entries in the join table.
             Database.CreateTable<AudioEpisodesToAlbum> ();
             var oldEntries = Database.Table<AudioEpisodesToAlbum> ().Where (a => a.AlbumID == albumID).ToArray ();
-            foreach (var oldEntry in oldEntries) {
+            foreach (var oldEntry in oldEntries)
+            {
                 Database.Delete (oldEntry);
             }
-            foreach (var episode in episodes) {
-                Database.Insert (new AudioEpisodesToAlbum () {
-                    AlbumID = albumID,
-                    EpisodeID = episode.ID,
-                });
+            foreach (var episode in episodes)
+            {
+                Database.Insert (new AudioEpisodesToAlbum ()
+                    {
+                        AlbumID = albumID,
+                        EpisodeID = episode.ID,
+                    });
             }
 
             Database.CreateTable<AudioEpisode> ();
-            foreach (var episode in episodes) {
+            foreach (var episode in episodes)
+            {
                 Database.InsertOrReplace (episode);
             }
         }

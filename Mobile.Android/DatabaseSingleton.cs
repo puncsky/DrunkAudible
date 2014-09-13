@@ -1,8 +1,6 @@
 ﻿// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
-using System.Linq;
 using DrunkAudible.Data;
-using DrunkAudible.Data.Models;
 
 namespace DrunkAudible.Mobile.Android
 {
@@ -17,10 +15,6 @@ namespace DrunkAudible.Mobile.Android
                 if (_orm == null)
                 {
                     _orm = new ObjectRelationalMapping ();
-                    if (!_orm.Database.Table<Album> ().Any ())
-                    {
-                        _orm.InsertOrUpdate (OrmInitializer.AlbumSamples);
-                    }
                 }
                 return _orm;
             }

@@ -90,4 +90,7 @@
   <ItemGroup>
     <Folder Include="Resources\drawable-hdpi\" />
   </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\DrunkAudible.Mobile.SQLite.db3" />
+  </ItemGroup>
 </Project>

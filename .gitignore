@@ -9,3 +9,4 @@ _UpgradeReport_Files
 /tools/xpkg
 [Pp]ackages
 
+*.db3

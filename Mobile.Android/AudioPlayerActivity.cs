@@ -45,15 +45,15 @@ namespace DrunkAudible.Mobile.Android
 
             play.Click += (sender, args) => SendAudioCommand (StreamingBackgroundService.ACTION_PLAY);
             pause.Click += (sender, args) => SendAudioCommand (StreamingBackgroundService.ACTION_PAUSE);
-            stop.Click += (sender, args) => 
+            stop.Click += (sender, args) =>
             {
                 SendAudioCommand (StreamingBackgroundService.ACTION_STOP);
                 _seekBar.Progress = 0;
             };
             _seekBar.ProgressChanged += (sender, e) =>
             {
-                spentTime.Text = String.Format(TIME_FORMAT, TimeSpan.FromSeconds (_seekBar.Progress));
-                leftTime.Text = String.Format(TIME_FORMAT, TimeSpan.FromSeconds (_seekBar.Max - _seekBar.Progress));
+                spentTime.Text = String.Format (TIME_FORMAT, TimeSpan.FromSeconds (_seekBar.Progress));
+                leftTime.Text = String.Format (TIME_FORMAT, TimeSpan.FromSeconds (_seekBar.Max - _seekBar.Progress));
                 if (e.FromUser && IsBound)
                 {
                     _connection.Binder.Service.CurrentPosition = _seekBar.Progress;

@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using SQLite;
-using DrunkAudible.Helpers;
 
 namespace DrunkAudible.Data.Models
 {

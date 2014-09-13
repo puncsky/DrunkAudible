@@ -1,10 +1,13 @@
 ﻿// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
+using System;
+using System.IO;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Widget;
 using DrunkAudible.Data.Models;
+using DrunkAudible.Data;
 
 namespace DrunkAudible.Mobile.Android
 {
@@ -16,6 +19,8 @@ namespace DrunkAudible.Mobile.Android
             base.OnCreate (savedInstanceState);
 
             SetContentView (Resource.Layout.AudioListView);
+
+            SetAssetDatabase ();
 
             ListAdapter = new AudioListAdapter (this, DatabaseSingleton.Orm.Albums);
 
@@ -30,6 +35,39 @@ namespace DrunkAudible.Mobile.Android
 
             StartActivity (activity);
         }
+
+        #region SetDatabase
+
+        // TODO move to splash screen activity
+        void SetAssetDatabase()
+        {
+            var docFolder = System.Environment.GetFolderPath (System.Environment.SpecialFolder.Personal);
+            var dbFile = Path.Combine (docFolder, ObjectRelationalMapping.DATABASE_FILE_NAME);
+            if (!File.Exists (dbFile))
+            {
+                var s = Assets.Open(ObjectRelationalMapping.DATABASE_FILE_NAME);  // DATA FILE RESOURCE ID
+                var writeStream = new FileStream (dbFile, FileMode.OpenOrCreate, FileAccess.Write);
+                ReadWriteStream (s, writeStream);
+            }
+        }
+
+        void ReadWriteStream(Stream readStream, Stream writeStream)
+        {
+            const int length = 256;
+            var buffer = new Byte[length];
+            var bytesRead = readStream.Read(buffer, 0, length);
+
+            // write the required bytes
+            while (bytesRead > 0)
+            {
+                writeStream.Write(buffer, 0, bytesRead);
+                bytesRead = readStream.Read(buffer, 0, length);
+            }
+            readStream.Close();
+            writeStream.Close();
+        }
+
+        #endregion
     }
 }
 
