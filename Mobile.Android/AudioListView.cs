@@ -11,13 +11,13 @@ namespace DrunkAudible.Mobile.Android
         public ScrollState ScrollState { get; private set; }
 
         public AudioListView (Context context, IAttributeSet attrs) :
-        base (context, attrs)
+            base (context, attrs)
         {
             Initialize ();
         }
 
         public AudioListView (Context context, IAttributeSet attrs, int defStyle) :
-        base (context, attrs, defStyle)
+            base (context, attrs, defStyle)
         {
             Initialize ();
         }
@@ -33,8 +33,9 @@ namespace DrunkAudible.Mobile.Android
         {
             ScrollState = e.ScrollState;
 
-            if (e.ScrollState == ScrollState.Idle) {
-                ((AudioListAdapter)Adapter).LoadImagesForOnscreenRows (this);
+            if (e.ScrollState == ScrollState.Idle)
+            {
+                ((AudioListAdapter) Adapter).LoadImagesForOnscreenRows (this);
             }
         }
     }

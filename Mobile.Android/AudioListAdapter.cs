@@ -20,6 +20,14 @@ namespace DrunkAudible.Mobile.Android
 
         readonly ImageDownloader _imageDownloader = new AndroidImageDownloader ();
 
+        readonly Album _album;
+
+        public AudioListAdapter (Context context, Album album)
+            : this (context, album.Episodes)
+        {
+            _album = album;
+        }
+
         public AudioListAdapter (Context context, IAudioListViewElement[] audios)
         {
             _audios = audios;
@@ -52,17 +60,19 @@ namespace DrunkAudible.Mobile.Android
                 var inflater = (LayoutInflater) _context.GetSystemService (Context.LayoutInflaterService);
                 rowView = inflater.Inflate (Resource.Layout.AudioListViewElement, parent, false);
 
-                var nameText = rowView.FindViewById<TextView> (Resource.Id.Title);
-                var authorsText = rowView.FindViewById<TextView> (Resource.Id.Authors);
-                var narratedByText = rowView.FindViewById<TextView> (Resource.Id.NarratedBy);
-                var narratorText = rowView.FindViewById<TextView> (Resource.Id.Narrator);
+                var name = rowView.FindViewById<TextView> (Resource.Id.Title);
+                var by = rowView.FindViewById<TextView> (Resource.Id.By);
+                var authors = rowView.FindViewById<TextView> (Resource.Id.Authors);
+                var narratedBy = rowView.FindViewById<TextView> (Resource.Id.NarratedBy);
+                var narrator = rowView.FindViewById<TextView> (Resource.Id.Narrator);
                 var icon = rowView.FindViewById<ImageView> (Resource.Id.Icon);
 
                 var tagHolder = new ViewHolder ();
-                tagHolder.Title = nameText;
-                tagHolder.Authors = authorsText;
-                tagHolder.Narrator = narratorText;
-                tagHolder.NarratedBy = narratedByText;
+                tagHolder.Title = name;
+                tagHolder.By = by;
+                tagHolder.Authors = authors;
+                tagHolder.Narrator = narrator;
+                tagHolder.NarratedBy = narratedBy;
                 tagHolder.Icon = icon;
 
                 rowView.Tag = tagHolder;
@@ -76,13 +86,25 @@ namespace DrunkAudible.Mobile.Android
 
             tag.Title.Text = audio.Title;
             tag.Authors.Text = String.Join (", ", audio.Authors.Select (a => a.Name));
+            if (String.IsNullOrEmpty (tag.Authors.Text))
+            {
+                tag.Authors.Text = String.Join (", ", _album.Authors.Select (a => a.Name));
+            }
+            if (String.IsNullOrEmpty (tag.Authors.Text))
+            {
+                tag.By.Text = String.Empty;
+            }
 
-            var narrator = audio.Narrator;
-            if (String.IsNullOrEmpty (narrator))
+            var narratorText = audio.Narrator;
+            if (String.IsNullOrEmpty (narratorText))
+            {
+                narratorText = _album.Narrator;
+            }
+            if (String.IsNullOrEmpty (narratorText))
             {
                 tag.NarratedBy.Text = String.Empty;
             }
-            tag.Narrator.Text = narrator;
+            tag.Narrator.Text = narratorText;
 
             if (_images.ContainsKey (audio.ID))
             {
@@ -105,6 +127,7 @@ namespace DrunkAudible.Mobile.Android
         {
             public ImageView Icon;
             public TextView Title;
+            public TextView By;
             public TextView Authors;
             public TextView NarratedBy;
             public TextView Narrator;
@@ -120,8 +143,9 @@ namespace DrunkAudible.Mobile.Android
             for (var position = listView.FirstVisiblePosition; position <= listView.LastVisiblePosition; position++)
             {
                 var audio = _audios [position];
-                if (!String.IsNullOrEmpty(audio.IconUrl) && !_images.ContainsKey (audio.ID)) {
-                        StartImageDownload (listView, position, audio);
+                if (!String.IsNullOrEmpty (audio.IconUrl) && !_images.ContainsKey (audio.ID))
+                {
+                    StartImageDownload (listView, position, audio);
                 }
             }
         }

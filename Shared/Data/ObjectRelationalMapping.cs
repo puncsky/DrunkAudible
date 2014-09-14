@@ -94,20 +94,20 @@ namespace DrunkAudible.Data
             _database.DeleteAll<User> ();
         }
 
-        public Album[] AlbumsCache
+        public Album[] Albums
         { 
             get
             {
                 if (_albums == null)
                 {
-                    _albums = Albums;
+                    _albums = LoadAlbums;
                 }
 
                 return _albums;
             }
         }
 
-        public Album[] Albums
+        public Album[] LoadAlbums
         { 
             get
             {
