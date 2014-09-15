@@ -28,5 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data\Models\JoinTables.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Models\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\OrmInitializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\DownloadBytesProgress.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\AudioDownloader.cs" />
   </ItemGroup>
 </Project>

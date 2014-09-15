@@ -25,26 +25,26 @@ namespace DrunkAudible.Mobile
 {
     public abstract class ImageDownloader
     {
-        readonly IsolatedStorageFile store = IsolatedStorageFile.GetUserStoreForApplication ();
+        readonly IsolatedStorageFile _store = IsolatedStorageFile.GetUserStoreForApplication ();
 
-        readonly ThrottledHttp http;
+        readonly ThrottledHttp _http;
 
-        readonly TimeSpan cacheDuration;
+        readonly TimeSpan _cacheDuration;
 
         const int CACHE_DAYS_MAX = 1; // TODO: release version should set a larger number.
 
         protected ImageDownloader (int maxConcurrentDownloads = 2)
             : this (TimeSpan.FromDays (CACHE_DAYS_MAX))
         {
-            http = new ThrottledHttp (maxConcurrentDownloads);
+            _http = new ThrottledHttp (maxConcurrentDownloads);
         }
 
         protected ImageDownloader (TimeSpan cacheDuration)
         {
-            this.cacheDuration = cacheDuration;
+            _cacheDuration = cacheDuration;
 
-            if (!store.DirectoryExists ("ImageCache")) {
-                store.CreateDirectory ("ImageCache");
+            if (!_store.DirectoryExists ("ImageCache")) {
+                _store.CreateDirectory ("ImageCache");
             }
         }
 
@@ -56,7 +56,7 @@ namespace DrunkAudible.Mobile
 
             var lastWriteTime = GetLastWriteTimeUtc (filename);
 
-            return lastWriteTime.HasValue && (now - lastWriteTime.Value) < cacheDuration;
+            return lastWriteTime.HasValue && (now - lastWriteTime.Value) < _cacheDuration;
         }
 
         public Task<object> GetImageAsync (Uri uri)
@@ -79,7 +79,7 @@ namespace DrunkAudible.Mobile
                 }
             }
 
-            using (var d = http.Get (uri))
+            using (var d = _http.Get (uri))
             {
                 using (var o = OpenStorage (filename, FileMode.Create))
                 {
@@ -95,15 +95,15 @@ namespace DrunkAudible.Mobile
         protected virtual DateTime? GetLastWriteTimeUtc (string fileName)
         {
             var path = Path.Combine ("ImageCache", fileName);
-            if (store.FileExists (path)) {
-                return store.GetLastWriteTime (path).UtcDateTime;
+            if (_store.FileExists (path)) {
+                return _store.GetLastWriteTime (path).UtcDateTime;
             }
             return null;
         }
 
         protected virtual Stream OpenStorage (string fileName, FileMode mode)
         {
-            return store.OpenFile (Path.Combine ("ImageCache", fileName), mode);
+            return _store.OpenFile (Path.Combine ("ImageCache", fileName), mode);
         }
 
         protected abstract object LoadImage (Stream stream);

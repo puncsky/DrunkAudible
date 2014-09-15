@@ -62,4 +62,11 @@
         android:layout_toRightOf="@id/NarratedBy"
         android:text="Narrator"
         android:textSize="7sp" />
+    <ProgressBar
+        android:layout_below="@id/NarratedBy"
+        android:layout_toRightOf="@id/Icon"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/DownloadProgress" />
 </RelativeLayout>

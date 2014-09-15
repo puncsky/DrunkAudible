@@ -36,19 +36,7 @@ namespace DrunkAudible.Data.Models
         [AutoIncrement]
         public int ID { get; set; }
 
-        #region FileMetaInfo
-
         public String RemoteURL { get; set; }
-
-        public String LocalURL { get; set; }
-
-        public bool IsDownloaded {
-            get {
-                return File.Exists (LocalURL);
-            }
-        }
-
-        #endregion
     }
 }
 

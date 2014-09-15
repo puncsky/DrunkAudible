@@ -14,7 +14,7 @@ namespace DrunkAudible.Mobile.Android
 {
     public class AudioListAdapter : BaseAdapter
     {
-        readonly IAudioListViewElement [] _audios;
+        readonly IAudioListViewElement [] _items;
 
         readonly Context _context;
 
@@ -23,14 +23,14 @@ namespace DrunkAudible.Mobile.Android
         readonly Album _album;
 
         public AudioListAdapter (Context context, Album album)
-            : this (context, album.Episodes)
+            : this (context, album.Episodes.ToArray ())
         {
             _album = album;
         }
 
-        public AudioListAdapter (Context context, IAudioListViewElement[] audios)
+        public AudioListAdapter (Context context, IAudioListViewElement[] items)
         {
-            _audios = audios;
+            _items = items;
             _context = context;
         }
 
@@ -38,7 +38,7 @@ namespace DrunkAudible.Mobile.Android
         {
             get
             {
-                return _audios.Length;
+                return _items.Length;
             }
         }
 
@@ -66,6 +66,7 @@ namespace DrunkAudible.Mobile.Android
                 var narratedBy = rowView.FindViewById<TextView> (Resource.Id.NarratedBy);
                 var narrator = rowView.FindViewById<TextView> (Resource.Id.Narrator);
                 var icon = rowView.FindViewById<ImageView> (Resource.Id.Icon);
+                var downloadProgress = rowView.FindViewById<ProgressBar> (Resource.Id.DownloadProgress);
 
                 var tagHolder = new ViewHolder ();
                 tagHolder.Title = name;
@@ -74,52 +75,83 @@ namespace DrunkAudible.Mobile.Android
                 tagHolder.Narrator = narrator;
                 tagHolder.NarratedBy = narratedBy;
                 tagHolder.Icon = icon;
+                tagHolder.DownloadProgress = downloadProgress;
 
                 rowView.Tag = tagHolder;
             }
 
-            var audio = _audios [position];
+            var item = _items [position];
 
             // The ViewHolder Pattern:
             // Store info into the tag as a cache for the next convertView.
             var tag = (ViewHolder) rowView.Tag;
 
-            tag.Title.Text = audio.Title;
-            tag.Authors.Text = String.Join (", ", audio.Authors.Select (a => a.Name));
-            if (String.IsNullOrEmpty (tag.Authors.Text))
-            {
-                tag.Authors.Text = String.Join (", ", _album.Authors.Select (a => a.Name));
-            }
+            tag.Title.Text = item.Title;
+
+            tag.Authors.Text = GetAuthorsText (item);
             if (String.IsNullOrEmpty (tag.Authors.Text))
             {
                 tag.By.Text = String.Empty;
             }
 
-            var narratorText = audio.Narrator;
-            if (String.IsNullOrEmpty (narratorText))
-            {
-                narratorText = _album.Narrator;
-            }
-            if (String.IsNullOrEmpty (narratorText))
+            tag.Narrator.Text = GetNarratorText (item);
+            if (String.IsNullOrEmpty (tag.Narrator.Text))
             {
                 tag.NarratedBy.Text = String.Empty;
             }
-            tag.Narrator.Text = narratorText;
 
-            if (_images.ContainsKey (audio.ID))
+            if (_images.ContainsKey (item.ID))
             {
-                tag.Icon.SetImageBitmap (_images [audio.ID]);
+                tag.Icon.SetImageBitmap (_images [item.ID]);
             }
             else
             {
+                // Set the default icon. Otherwise, it may be the cached icon from the view holder.
+                tag.Icon.SetImageBitmap (
+                    BitmapFactory.DecodeResource (_context.Resources, Resource.Drawable.ic_launcher)
+                );
+
                 var listView = (AudioListView) parent;
-                if (listView.ScrollState == ScrollState.Idle && !String.IsNullOrEmpty (audio.IconUrl))
+                if (listView.ScrollState == ScrollState.Idle && !String.IsNullOrEmpty (item.IconUrl))
                 {
-                    StartImageDownload (listView, position, audio);
+                    StartImageDownload (listView, position, item);
+                }
+            }
+
+            if (_album != null)
+            {
+                var episode = item as AudioEpisode;
+                if (episode != null)
+                {
+                    tag.DownloadProgress.Progress =
+                        AudioDownloader.HasLocalFile(episode.RemoteURL) ? tag.DownloadProgress.Max : 0;
                 }
             }
 
             return rowView;
+        }
+
+        String GetAuthorsText (IAudioListViewElement audio)
+        {
+            var authors = audio.Authors != null ?
+                String.Join (", ", audio.Authors.Select (a => a.Name)) : String.Empty;
+            if (String.IsNullOrEmpty (authors) && _album != null && _album.Authors != null)
+            {
+                authors = String.Join (", ", _album.Authors.Select (a => a.Name));
+            }
+
+            return authors;
+        }
+
+        String GetNarratorText (IAudioListViewElement audio)
+        {
+            var narrator = audio.Narrator;
+            if (String.IsNullOrEmpty (narrator) && _album != null)
+            {
+                narrator = _album.Narrator;
+            }
+
+            return narrator;
         }
 
         // ViewHolder Pattern
@@ -131,6 +163,7 @@ namespace DrunkAudible.Mobile.Android
             public TextView Authors;
             public TextView NarratedBy;
             public TextView Narrator;
+            public ProgressBar DownloadProgress;
         }
 
         #region Image Support
@@ -142,7 +175,7 @@ namespace DrunkAudible.Mobile.Android
         {
             for (var position = listView.FirstVisiblePosition; position <= listView.LastVisiblePosition; position++)
             {
-                var audio = _audios [position];
+                var audio = _items [position];
                 if (!String.IsNullOrEmpty (audio.IconUrl) && !_images.ContainsKey (audio.ID))
                 {
                     StartImageDownload (listView, position, audio);
@@ -188,6 +221,7 @@ namespace DrunkAudible.Mobile.Android
             var firstPostion = listView.FirstVisiblePosition - listView.HeaderViewsCount;
             var childIndex = position - firstPostion;
 
+            // Only update visible items.
             if (0 <= childIndex && childIndex < listView.ChildCount)
             {
                 var view = listView.GetChildAt (childIndex);
