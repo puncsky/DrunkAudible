@@ -23,11 +23,10 @@ namespace DrunkAudible.Mobile
         {
             var receivedBytes = 0;
             var client = new WebClient ();
-            var fileName = Uri.EscapeDataString (url);
 
             _throttle.WaitOne ();
 
-            using (var storage = OpenStorage (fileName))
+            using (var storage = OpenStorage (url))
             using (var stream = await client.OpenReadTaskAsync (url))
             {
                 var buffer = new byte[BUFFER_SIZE];
@@ -59,19 +58,19 @@ namespace DrunkAudible.Mobile
 
         public static bool HasLocalFile (String url)
         {
+            return File.Exists (GetFilePath (url));
+        }
+
+        public static String GetFilePath (String url)
+        {
             var fileName = Uri.EscapeDataString (url);
-            return File.Exists (GetFilePath (fileName));
-        }
-
-        static Stream OpenStorage (String fileName)
-        {
-            return File.Create (GetFilePath (fileName));
-        }
-
-        static String GetFilePath (String fileName)
-        {
             var documentsPath = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
             return Path.Combine (documentsPath, fileName);
+        }
+
+        static Stream OpenStorage (String url)
+        {
+            return File.Create (GetFilePath (url));
         }
 
         static void Decrypt (byte[] bytes, int size)

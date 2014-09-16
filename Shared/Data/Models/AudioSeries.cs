@@ -9,7 +9,7 @@ namespace DrunkAudible.Data.Models
     public class Album : IAudioListViewElement
     {
         [Ignore]
-        public IEnumerable<Author> Authors { get; set; }
+        public Author[] Authors { get; set; }
 
         public String Description { get; set; }
 
@@ -26,7 +26,7 @@ namespace DrunkAudible.Data.Models
         public String Title { get; set; }
 
         [Ignore]
-        public IEnumerable<AudioEpisode> Episodes { get; set; }
+        public AudioEpisode[] Episodes { get; set; }
     }
 }
 

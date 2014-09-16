@@ -11,7 +11,7 @@ namespace DrunkAudible.Data.Models
 
         String Title { get; }
 
-        IEnumerable<Author> Authors { get; }
+        Author[] Authors { get; }
 
         String Narrator { get; }
 

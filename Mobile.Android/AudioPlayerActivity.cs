@@ -1,12 +1,14 @@
 ﻿// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
 using System;
+using System.Linq;
 using System.Threading;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Util;
 using Android.Widget;
+using DrunkAudible.Data.Models;
 
 namespace DrunkAudible.Mobile.Android
 {
@@ -24,6 +26,9 @@ namespace DrunkAudible.Mobile.Android
 
         const String TIME_FORMAT = "{0:mm\\:ss}";
 
+        const String ALBUM_ID_INTENT_EXTRA = "AlbumID";
+        const String EPISODE_ID_INTENT_EXTRA = "EpisodeID";
+
         SeekBar _seekBar;
 
         CancellationTokenSource _cancellationTokenSource;
@@ -33,6 +38,8 @@ namespace DrunkAudible.Mobile.Android
             base.OnCreate (bundle);
 
             SetContentView (Resource.Layout.AudioPlayer);
+
+            InitializeExtrasFromIntent ();
 
             _connection = new StreamingBackgroundServiceConnection (this);
 
@@ -63,6 +70,31 @@ namespace DrunkAudible.Mobile.Android
             SendAudioCommand (StreamingBackgroundService.ACTION_PLAY);
         }
 
+        void InitializeExtrasFromIntent ()
+        {
+            if (Intent.HasExtra (ALBUM_ID_INTENT_EXTRA))
+            {
+                CurrentAlbum = DatabaseSingleton
+                    .Orm
+                    .Albums
+                    .FirstOrDefault (a => a.ID == Intent.GetIntExtra (ALBUM_ID_INTENT_EXTRA, -1));
+            }
+            if (Intent.HasExtra (EPISODE_ID_INTENT_EXTRA))
+            {
+                CurrentEpisode = CurrentAlbum
+                    .Episodes
+                    .FirstOrDefault (e => e.ID == Intent.GetIntExtra (EPISODE_ID_INTENT_EXTRA, -1));
+            }
+        }
+
+        public static Intent CreateIntent(Context context, int albumID, int currentEpisodeID)
+        {
+            var intent = new Intent (context, typeof (AudioPlayerActivity));
+            intent.PutExtra (ALBUM_ID_INTENT_EXTRA, albumID);
+            intent.PutExtra (EPISODE_ID_INTENT_EXTRA, currentEpisodeID);
+            return intent;
+        }
+
         protected override void OnStart ()
         {
             base.OnStart ();
@@ -84,13 +116,22 @@ namespace DrunkAudible.Mobile.Android
 
         public bool IsBound { get; set; }
 
+        public Album CurrentAlbum { get; set; }
+
+        public AudioEpisode CurrentEpisode { get; set; }
+
         void SendAudioCommand (string action)
         {
-            var intent = new Intent (action);
+            var intent =
+                CurrentAlbum == null || CurrentEpisode == null ?
+                StreamingBackgroundService.CreateIntent (action) :
+                StreamingBackgroundService.CreateIntent (action, CurrentAlbum.ID, CurrentEpisode.ID);
+
             if (!IsBound)
             {
                 BindService (intent, _connection, Bind.AutoCreate);
             }
+
             StartService (intent);
         }
 

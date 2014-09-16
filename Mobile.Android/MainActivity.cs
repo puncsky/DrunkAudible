@@ -30,10 +30,7 @@ namespace DrunkAudible.Mobile.Android
         void OnAlbumItemClicked_GoTo_EpisodesListViewActivity(object sender, AdapterView.ItemClickEventArgs e)
         {
             var selectedAlbum = DatabaseSingleton.Orm.Albums [e.Position];
-            var activity = new Intent (this, typeof(EpisodesListActivity));
-            activity.PutExtra ("AlbumID", selectedAlbum.ID);
-
-            StartActivity (activity);
+            StartActivity (EpisodesListActivity.CreateIntent (this, selectedAlbum.ID));
         }
 
         #region SetDatabase
@@ -51,7 +48,7 @@ namespace DrunkAudible.Mobile.Android
             }
         }
 
-        void ReadWriteStream(Stream readStream, Stream writeStream)
+        static void ReadWriteStream(Stream readStream, Stream writeStream)
         {
             const int length = 256;
             var buffer = new Byte[length];

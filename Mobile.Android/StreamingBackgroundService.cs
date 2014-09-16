@@ -1,12 +1,14 @@
 ﻿// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
 using System;
+using System.Linq;
 using Android.App;
 using Android.Content;
 using Android.Media;
 using Android.Net.Wifi;
 using Android.OS;
 using Android.Util;
+using DrunkAudible.Data.Models;
 using Net = Android.Net;
 
 namespace DrunkAudible.Mobile.Android
@@ -22,9 +24,10 @@ namespace DrunkAudible.Mobile.Android
 
         const String DEBUG_TAG = "StreamingBackgroundService";
 
-        const string MP3 = "/data/data/warning.mp3";
-
         const int MILLISECONDS_PER_SECOND = 1000;
+
+        const String ALBUM_ID_INTENT_EXTRA = "AlbumID";
+        const String EPISODE_ID_INTENT_EXTRA = "EpisodeID";
 
         MediaPlayer _player;
         AudioManager _audioManager;
@@ -46,6 +49,19 @@ namespace DrunkAudible.Mobile.Android
             _wifiManager = (WifiManager)GetSystemService (WifiService);
         }
 
+        public static Intent CreateIntent(String action)
+        {
+            return new Intent (action);
+        }
+
+        public static Intent CreateIntent(String action, int albumID, int episodeID)
+        {
+            var intent = CreateIntent(action);
+            intent.PutExtra (ALBUM_ID_INTENT_EXTRA, albumID);
+            intent.PutExtra (EPISODE_ID_INTENT_EXTRA, episodeID);
+            return intent;
+        }
+
         public override IBinder OnBind (Intent intent)
         {
             return new StreamingBackgroundServiceBinder (this);
@@ -53,6 +69,9 @@ namespace DrunkAudible.Mobile.Android
 
         public override StartCommandResult OnStartCommand (Intent intent, StartCommandFlags flags, int startId)
         {
+
+            InitializeExtrasFromIntent (intent);
+
             switch (intent.Action)
             {
                 case ACTION_PLAY:
@@ -96,7 +115,9 @@ namespace DrunkAudible.Mobile.Android
             {
                 case AudioFocus.Gain:
                     if (_player == null)
+                    {
                         IntializePlayer ();
+                    }
 
                     if (!_player.IsPlaying)
                     {
@@ -158,6 +179,10 @@ namespace DrunkAudible.Mobile.Android
             }
         }
 
+        public Album CurrentAlbum { get; set; }
+
+        public AudioEpisode CurrentEpisode { get; set; }
+
         void IntializePlayer ()
         {
             _player = new MediaPlayer ();
@@ -205,8 +230,12 @@ namespace DrunkAudible.Mobile.Android
 
             try
             {
-                Java.IO.File file = new Java.IO.File (MP3);
-                Java.IO.FileInputStream fis = new Java.IO.FileInputStream (file);
+                if (CurrentEpisode == null || !AudioDownloader.HasLocalFile (CurrentEpisode.RemoteURL))
+                {
+                    return;
+                }
+                var file = new Java.IO.File (AudioDownloader.GetFilePath(CurrentEpisode.RemoteURL));
+                var fis = new Java.IO.FileInputStream (file);
 
                 // TODO reorganize it to play selected audio.
                 // await player.SetDataSourceAsync(ApplicationContext, Net.Uri.Parse(Mp3
@@ -315,6 +344,23 @@ namespace DrunkAudible.Mobile.Android
 
             _wifiLock.Release ();
             _wifiLock = null;
+        }
+
+        void InitializeExtrasFromIntent (Intent intent)
+        {
+            if (intent.HasExtra (ALBUM_ID_INTENT_EXTRA))
+            {
+                CurrentAlbum = DatabaseSingleton
+                    .Orm
+                    .Albums
+                    .FirstOrDefault (a => a.ID == intent.GetIntExtra (ALBUM_ID_INTENT_EXTRA, -1));
+            }
+            if (intent.HasExtra (EPISODE_ID_INTENT_EXTRA))
+            {
+                CurrentEpisode = CurrentAlbum
+                    .Episodes
+                    .FirstOrDefault (e => e.ID == intent.GetIntExtra (EPISODE_ID_INTENT_EXTRA, -1));
+            }
         }
     }
 }

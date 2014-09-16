@@ -9,15 +9,20 @@ using Android.Widget;
 using DrunkAudible.Data.Models;
 using System.Threading.Tasks;
 using Android.Util;
+using System.Collections.Generic;
 
 namespace DrunkAudible.Mobile.Android
 {
     [Activity (Label = "EpisodesListViewActivity")]
     public class EpisodesListActivity : ListActivity
     {
-        AudioEpisode[] _episodes;
+        Album _album;
 
         const String DEBUG_TAG = "EpisodesListActivity";
+
+        const String ALBUM_ID_INTENT_EXTRA = "AlbumID";
+
+        List<int> _audioDownloadsInProgress = new List<int> ();
 
         protected override void OnCreate (Bundle savedInstanceState)
         {
@@ -25,24 +30,54 @@ namespace DrunkAudible.Mobile.Android
 
             SetContentView (Resource.Layout.AudioListView);
 
-            var albumID = Intent.GetIntExtra ("AlbumID", -1);
-            var album = DatabaseSingleton.Orm.Albums.FirstOrDefault (a => a.ID == albumID);
-            _episodes = album.Episodes.ToArray ();
+            InitializeExtrasFromIntent ();
 
-            ListAdapter = new AudioListAdapter (this, album);
+            ListAdapter = new AudioListAdapter (this, _album);
 
             ListView.ItemClick += OnAlbumItemClicked;
         }
 
+        public static Intent CreateIntent (Context context, int albumID)
+        {
+            var intent = new Intent (context, typeof(EpisodesListActivity));
+            intent.PutExtra (ALBUM_ID_INTENT_EXTRA, albumID);
+            return intent;
+        }
+
+        void InitializeExtrasFromIntent ()
+        {
+            if (Intent.HasExtra (ALBUM_ID_INTENT_EXTRA))
+            {
+                var albumID = Intent.GetIntExtra (ALBUM_ID_INTENT_EXTRA, -1);
+                _album = DatabaseSingleton.Orm.Albums.FirstOrDefault (a => a.ID == albumID);
+            }
+        }
+
         async void OnAlbumItemClicked (object sender, AdapterView.ItemClickEventArgs e)
         {
-            var clickedEpisode = _episodes [e.Position];
-            if (AudioDownloader.HasLocalFile(clickedEpisode.RemoteURL))
+            var selectedEpisode = _album.Episodes [e.Position];
+
+            if (_audioDownloadsInProgress.Contains (selectedEpisode.ID))
             {
-                StartActivity (new Intent (this, typeof (AudioPlayerActivity)));
+                return;
             }
 
-            await StartDownloadAsync (sender, e);
+            if (AudioDownloader.HasLocalFile (selectedEpisode.RemoteURL))
+            {
+                StartActivity (AudioPlayerActivity.CreateIntent (this, _album.ID, selectedEpisode.ID));
+            }
+            else
+            {
+                _audioDownloadsInProgress.Add (selectedEpisode.ID);
+                await StartDownloadAsync (sender, e).ContinueWith(t =>
+                    {
+                        if (!t.IsFaulted)
+                        {
+                            _audioDownloadsInProgress.Remove (selectedEpisode.ID);
+                        }
+                    }
+                );
+            }
         }
 
         async Task StartDownloadAsync(object sender, AdapterView.ItemClickEventArgs e)
@@ -51,10 +86,11 @@ namespace DrunkAudible.Mobile.Android
             var progressBar = view.FindViewById<ProgressBar> (Resource.Id.DownloadProgress);
             progressBar.Progress = 0;
             var progressReporter = new Progress<DownloadBytesProgress> ();
-            progressReporter.ProgressChanged += (s, args) => progressBar.Progress = (int) (100 * args.PercentComplete);
-            var clickedEpisode = _episodes [e.Position];
+            progressReporter.ProgressChanged += 
+                (s, args) => progressBar.Progress = (int) (progressBar.Max * args.PercentComplete);
+            var selectedEpisode = _album.Episodes [e.Position];
 
-            var downloadTask = AudioDownloader.CreateDownloadTask (clickedEpisode.RemoteURL, progressReporter);
+            var downloadTask = AudioDownloader.CreateDownloadTask (selectedEpisode.RemoteURL, progressReporter);
             var bytesDownloaded = await downloadTask;
             Log.Debug (DEBUG_TAG, "Downloaded {0} bytes.", bytesDownloaded);
         }

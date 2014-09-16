@@ -10,7 +10,7 @@ namespace DrunkAudible.Data.Models
     public class AudioEpisode : IAudioListViewElement
     {
         [Ignore]
-        public IEnumerable<Author> Authors { get; set; }
+        public Author[] Authors { get; set; }
 
         public double CurrentTime { get; set; }
 
