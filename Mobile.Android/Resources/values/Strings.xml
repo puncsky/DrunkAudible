@@ -1,15 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="by">By </string>
-    <string name="narrated_by">Narrated by </string>
-    <string name="app_name">DrunkAudible</string>
+    <string name="ApplicationName">DrunkAudible</string>
 
-    <string name="Hello">Hello World, Click Me!</string>
-    <string name="ApplicationName">BackgroundStreamingAudio</string>
+    <string name="By">By </string>
+    <string name="NarratedBy">Narrated by </string>
+
     <string name="play">Play</string>
     <string name="pause">Pause</string>
     <string name="stop">Stop</string>
-    <string name="mp3_url">Enter mp3 url</string>
 
-    <string name="NoFavoritesText">You do not have any favorites. Add them by searching for someone.</string>
+    <string name="NoFavoritesText">You do not have any favorites. Add them by searching.</string>
+
+    <string name="NotificationContentText">by {0} with love</string>
+    <string name="NoticifationTicker">Started playing {0}!</string>
 </resources>

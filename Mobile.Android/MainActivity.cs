@@ -3,11 +3,10 @@
 using System;
 using System.IO;
 using Android.App;
-using Android.Content;
 using Android.OS;
 using Android.Widget;
-using DrunkAudible.Data.Models;
 using DrunkAudible.Data;
+using DrunkAudible.Data.Models;
 
 namespace DrunkAudible.Mobile.Android
 {

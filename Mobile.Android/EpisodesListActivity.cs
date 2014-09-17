@@ -1,15 +1,15 @@
 ﻿// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.OS;
+using Android.Util;
 using Android.Widget;
 using DrunkAudible.Data.Models;
-using System.Threading.Tasks;
-using Android.Util;
-using System.Collections.Generic;
 
 namespace DrunkAudible.Mobile.Android
 {

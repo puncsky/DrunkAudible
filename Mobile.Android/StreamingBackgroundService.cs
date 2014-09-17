@@ -268,22 +268,28 @@ namespace DrunkAudible.Mobile.Android
                 ApplicationContext,
                 0,
                 new Intent (ApplicationContext, typeof(AudioPlayerActivity)),
-                PendingIntentFlags.UpdateCurrent);
-
-            var notification = new Notification
-            {
-                TickerText = new Java.Lang.String ("Song started!"),
-                Icon = Resource.Drawable.ic_stat_av_play_over_video
-            };
-            notification.Flags |= NotificationFlags.OngoingEvent;
-            notification.SetLatestEventInfo (
-                ApplicationContext,
-                "Xamarin Streaming",
-                "Playing music!",
-                pendingIntent
+                PendingIntentFlags.UpdateCurrent
             );
 
-            StartForeground (NotificationId, notification);
+            var notificationBuilder = new Notification.Builder (ApplicationContext);
+            notificationBuilder.SetContentTitle (CurrentEpisode.Title);
+            notificationBuilder.SetContentText (
+                String.Format (
+                    ApplicationContext.GetString (Resource.String.NotificationContentText),
+                    ApplicationContext.GetString (Resource.String.ApplicationName)
+                )
+            );
+            notificationBuilder.SetSmallIcon (Resource.Drawable.ic_stat_av_play_over_video);
+            notificationBuilder.SetTicker (
+                String.Format (
+                    Application.GetString (Resource.String.NoticifationTicker),
+                    CurrentEpisode.Title
+                )
+            );
+            notificationBuilder.SetOngoing (true);
+            notificationBuilder.SetContentIntent (pendingIntent);
+
+            StartForeground (NotificationId, notificationBuilder.Build());
         }
 
         void Pause ()

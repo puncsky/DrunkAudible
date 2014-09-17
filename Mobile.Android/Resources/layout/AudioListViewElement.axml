@@ -32,7 +32,7 @@
         android:layout_marginRight="1sp"
         android:ellipsize="marquee"
         android:layout_toRightOf="@id/Icon"
-        android:text="@string/by"
+        android:text="@string/By"
         android:textSize="7sp" />
     <TextView
         android:id="@+id/Authors"
@@ -51,7 +51,7 @@
         android:layout_marginRight="1sp"
         android:ellipsize="marquee"
         android:layout_toRightOf="@id/Icon"
-        android:text="@string/narrated_by"
+        android:text="@string/NarratedBy"
         android:textSize="7sp" />
     <TextView
         android:id="@+id/Narrator"
