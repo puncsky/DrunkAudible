@@ -6,18 +6,12 @@ using System.Threading;
 using Android.App;
 using Android.Content;
 using Android.OS;
-using Android.Util;
 using Android.Widget;
 using DrunkAudible.Data.Models;
 
 namespace DrunkAudible.Mobile.Android
 {
-    [Activity (
-        Label = "BackgroundStreamingAudio",
-        MainLauncher = true,
-        Icon = "@drawable/ic_launcher",
-        Theme = "@style/Theme"
-    )]
+    [Activity (Label = "AudioPlayerActivity")]
     public class AudioPlayerActivity : Activity
     {
         StreamingBackgroundServiceConnection _connection;

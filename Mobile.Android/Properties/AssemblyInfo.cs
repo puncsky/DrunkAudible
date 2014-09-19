@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using Android.App;
 
 // Information about this assembly is defined by the following attributes.
@@ -30,3 +29,7 @@ using Android.App;
 [assembly: UsesPermission(Android.Manifest.Permission.Internet)]
 [assembly: UsesPermission(Android.Manifest.Permission.WriteExternalStorage)]
 [assembly: UsesPermission(Android.Manifest.Permission.WakeLock)]
+
+// TODO Remove debuggable for the release version.
+[assembly: Application(Debuggable=false)]
+

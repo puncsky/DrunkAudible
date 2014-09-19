@@ -10,7 +10,7 @@ using DrunkAudible.Data.Models;
 
 namespace DrunkAudible.Mobile.Android
 {
-    [Activity (Label = "Faves", MainLauncher = true, Icon = "@drawable/icon")]
+    [Activity (Label = "Faves", MainLauncher = true, Icon = "@drawable/ic_launcher", Theme = "@style/Theme")]
     public class MainActivity : ListActivity
     {
         protected override void OnCreate(Bundle savedInstanceState)
