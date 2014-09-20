@@ -1,9 +1,7 @@
 ﻿// 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
 using System;
-using System.IO;
 using SQLite;
-using System.Collections.Generic;
 
 namespace DrunkAudible.Data.Models
 {
@@ -37,6 +35,8 @@ namespace DrunkAudible.Data.Models
         public int ID { get; set; }
 
         public String RemoteURL { get; set; }
+
+        public long FileSize { get; set; }
     }
 }
 

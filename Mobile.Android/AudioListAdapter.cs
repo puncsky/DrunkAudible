@@ -15,11 +15,8 @@ namespace DrunkAudible.Mobile.Android
     public class AudioListAdapter : BaseAdapter
     {
         readonly IAudioListViewElement [] _items;
-
         readonly Context _context;
-
         readonly ImageDownloader _imageDownloader = new AndroidImageDownloader ();
-
         readonly Album _album;
 
         public AudioListAdapter (Context context, Album album)
@@ -54,62 +51,53 @@ namespace DrunkAudible.Mobile.Android
 
         public override View GetView (int position, View convertView, ViewGroup parent)
         {
-            var rowView = convertView;
-            if (convertView == null)
+            View rowView = null;
+            var item = _items [position];
+            if (_album != null)
+            {
+                var episode = (AudioEpisode) item;
+                if (AudioDownloader.AudioViewsDownloadInProgress.ContainsKey (episode.RemoteURL))
+                {
+                    rowView = AudioDownloader.AudioViewsDownloadInProgress [episode.RemoteURL];
+                }
+            }
+
+            if (rowView == null)
             {
                 var inflater = (LayoutInflater) _context.GetSystemService (Context.LayoutInflaterService);
                 rowView = inflater.Inflate (Resource.Layout.AudioListViewElement, parent, false);
-
-                var name = rowView.FindViewById<TextView> (Resource.Id.Title);
-                var by = rowView.FindViewById<TextView> (Resource.Id.By);
-                var authors = rowView.FindViewById<TextView> (Resource.Id.Authors);
-                var narratedBy = rowView.FindViewById<TextView> (Resource.Id.NarratedBy);
-                var narrator = rowView.FindViewById<TextView> (Resource.Id.Narrator);
-                var icon = rowView.FindViewById<ImageView> (Resource.Id.Icon);
-                var downloadProgress = rowView.FindViewById<ProgressBar> (Resource.Id.DownloadProgress);
-
-                var tagHolder = new ViewHolder ();
-                tagHolder.Title = name;
-                tagHolder.By = by;
-                tagHolder.Authors = authors;
-                tagHolder.Narrator = narrator;
-                tagHolder.NarratedBy = narratedBy;
-                tagHolder.Icon = icon;
-                tagHolder.DownloadProgress = downloadProgress;
-
-                rowView.Tag = tagHolder;
             }
 
-            var item = _items [position];
+            var title = rowView.FindViewById<TextView> (Resource.Id.Title);
+            var by = rowView.FindViewById<TextView> (Resource.Id.By);
+            var authors = rowView.FindViewById<TextView> (Resource.Id.Authors);
+            var narratedBy = rowView.FindViewById<TextView> (Resource.Id.NarratedBy);
+            var narrator = rowView.FindViewById<TextView> (Resource.Id.Narrator);
+            var icon = rowView.FindViewById<ImageView> (Resource.Id.Icon);
+            var downloadProgress = rowView.FindViewById<ProgressBar> (Resource.Id.DownloadProgress);
 
-            // The ViewHolder Pattern:
-            // Store info into the tag as a cache for the next convertView.
-            var tag = (ViewHolder) rowView.Tag;
+            title.Text = item.Title;
 
-            tag.Title.Text = item.Title;
-
-            tag.Authors.Text = GetAuthorsText (item);
-            if (String.IsNullOrEmpty (tag.Authors.Text))
+            authors.Text = GetAuthorsText (item);
+            if (String.IsNullOrEmpty (authors.Text))
             {
-                tag.By.Text = String.Empty;
+                by.Text = String.Empty;
             }
 
-            tag.Narrator.Text = GetNarratorText (item);
-            if (String.IsNullOrEmpty (tag.Narrator.Text))
+            narrator.Text = GetNarratorText (item);
+            if (String.IsNullOrEmpty (narrator.Text))
             {
-                tag.NarratedBy.Text = String.Empty;
+                narratedBy.Text = String.Empty;
             }
 
             if (_images.ContainsKey (item.ID))
             {
-                tag.Icon.SetImageBitmap (_images [item.ID]);
+                icon.SetImageBitmap (_images [item.ID]);
             }
             else
             {
                 // Set the default icon. Otherwise, it may be the cached icon from the view holder.
-                tag.Icon.SetImageBitmap (
-                    BitmapFactory.DecodeResource (_context.Resources, Resource.Drawable.ic_launcher)
-                );
+                icon.SetImageBitmap (BitmapFactory.DecodeResource (_context.Resources, Resource.Drawable.ic_launcher));
 
                 var listView = (AudioListView) parent;
                 if (listView.ScrollState == ScrollState.Idle && !String.IsNullOrEmpty (item.IconUrl))
@@ -123,8 +111,8 @@ namespace DrunkAudible.Mobile.Android
                 var episode = item as AudioEpisode;
                 if (episode != null)
                 {
-                    tag.DownloadProgress.Progress =
-                        AudioDownloader.HasLocalFile(episode.RemoteURL) ? tag.DownloadProgress.Max : 0;
+                    downloadProgress.Progress =
+                        AudioDownloader.HasLocalFile(episode.RemoteURL, episode.FileSize) ? downloadProgress.Max : 0;
                 }
             }
 
@@ -152,18 +140,6 @@ namespace DrunkAudible.Mobile.Android
             }
 
             return narrator;
-        }
-
-        // ViewHolder Pattern
-        class ViewHolder : Java.Lang.Object
-        {
-            public ImageView Icon;
-            public TextView Title;
-            public TextView By;
-            public TextView Authors;
-            public TextView NarratedBy;
-            public TextView Narrator;
-            public ProgressBar DownloadProgress;
         }
 
         #region Image Support
@@ -218,10 +194,9 @@ namespace DrunkAudible.Mobile.Android
             _images [audio.ID] = image;
             _imageDownloadsInProgress.Remove (audio.ID);
 
+            // Locate the the child view and update.
             var firstPostion = listView.FirstVisiblePosition - listView.HeaderViewsCount;
             var childIndex = position - firstPostion;
-
-            // Only update visible items.
             if (0 <= childIndex && childIndex < listView.ChildCount)
             {
                 var view = listView.GetChildAt (childIndex);

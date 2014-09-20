@@ -1,13 +1,10 @@
 ﻿// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.OS;
-using Android.Util;
 using Android.Widget;
 using DrunkAudible.Data.Models;
 
@@ -19,21 +16,15 @@ namespace DrunkAudible.Mobile.Android
         Album _album;
 
         const String DEBUG_TAG = "EpisodesListActivity";
-
         const String ALBUM_ID_INTENT_EXTRA = "AlbumID";
-
-        List<int> _audioDownloadsInProgress = new List<int> ();
 
         protected override void OnCreate (Bundle savedInstanceState)
         {
             base.OnCreate (savedInstanceState);
 
             SetContentView (Resource.Layout.AudioListView);
-
             InitializeExtrasFromIntent ();
-
             ListAdapter = new AudioListAdapter (this, _album);
-
             ListView.ItemClick += OnAlbumItemClicked;
         }
 
@@ -57,42 +48,19 @@ namespace DrunkAudible.Mobile.Android
         {
             var selectedEpisode = _album.Episodes [e.Position];
 
-            if (_audioDownloadsInProgress.Contains (selectedEpisode.ID))
+            if (AudioDownloader.AudioViewsDownloadInProgress.ContainsKey (selectedEpisode.RemoteURL))
             {
                 return;
             }
 
-            if (AudioDownloader.HasLocalFile (selectedEpisode.RemoteURL))
+            if (AudioDownloader.HasLocalFile (selectedEpisode.RemoteURL, selectedEpisode.FileSize))
             {
                 StartActivity (AudioPlayerActivity.CreateIntent (this, _album.ID, selectedEpisode.ID));
             }
             else
             {
-                _audioDownloadsInProgress.Add (selectedEpisode.ID);
-                await StartDownloadAsync (sender, e).ContinueWith(t =>
-                    {
-                        if (!t.IsFaulted)
-                        {
-                            _audioDownloadsInProgress.Remove (selectedEpisode.ID);
-                        }
-                    }
-                );
+                await AudioDownloader.StartDownloadAsync (e.Position, selectedEpisode.RemoteURL, ListView);
             }
-        }
-
-        async Task StartDownloadAsync(object sender, AdapterView.ItemClickEventArgs e)
-        {
-            var view = ListView.GetChildAt (e.Position);
-            var progressBar = view.FindViewById<ProgressBar> (Resource.Id.DownloadProgress);
-            progressBar.Progress = 0;
-            var progressReporter = new Progress<DownloadBytesProgress> ();
-            progressReporter.ProgressChanged += 
-                (s, args) => progressBar.Progress = (int) (progressBar.Max * args.PercentComplete);
-            var selectedEpisode = _album.Episodes [e.Position];
-
-            var downloadTask = AudioDownloader.CreateDownloadTask (selectedEpisode.RemoteURL, progressReporter);
-            var bytesDownloaded = await downloadTask;
-            Log.Debug (DEBUG_TAG, "Downloaded {0} bytes.", bytesDownloaded);
         }
     }
 }
