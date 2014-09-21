@@ -35,6 +35,8 @@ namespace DrunkAudible.Mobile.Android
         WifiManager.WifiLock _wifiLock;
         bool _paused;
 
+        AudioEpisode _currentEpisode;
+
         const int NotificationId = 1;
 
         /// <summary>
@@ -181,7 +183,19 @@ namespace DrunkAudible.Mobile.Android
 
         public Album CurrentAlbum { get; set; }
 
-        public AudioEpisode CurrentEpisode { get; set; }
+        public AudioEpisode CurrentEpisode
+        {
+            get { return _currentEpisode; }
+            set
+            {
+                if (value != _currentEpisode)
+                {
+                    Stop ();
+                }
+                _currentEpisode = value;
+                Play ();
+            }
+        }
 
         void IntializePlayer ()
         {

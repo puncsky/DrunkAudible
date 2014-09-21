@@ -116,10 +116,7 @@ namespace DrunkAudible.Mobile.Android
 
         void SendAudioCommand (string action)
         {
-            var intent =
-                CurrentAlbum == null || CurrentEpisode == null ?
-                StreamingBackgroundService.CreateIntent (action) :
-                StreamingBackgroundService.CreateIntent (action, CurrentAlbum.ID, CurrentEpisode.ID);
+            var intent = StreamingBackgroundService.CreateIntent (action);
 
             if (!IsBound)
             {
