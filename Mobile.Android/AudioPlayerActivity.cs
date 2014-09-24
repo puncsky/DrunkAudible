@@ -16,7 +16,7 @@ namespace DrunkAudible.Mobile.Android
     {
         StreamingBackgroundServiceConnection _connection;
 
-        const int INTERVAL = 1000; // milliseconds per update of audio player seekbar.
+        const int INTERVAL = 100; // milliseconds per update of audio player seekbar.
 
         const String TIME_FORMAT = "{0:mm\\:ss}";
 
@@ -24,44 +24,64 @@ namespace DrunkAudible.Mobile.Android
         const String EPISODE_ID_INTENT_EXTRA = "EpisodeID";
 
         SeekBar _seekBar;
+        TextView _spentTime;
+        TextView _leftTime;
+        Timer _uIUpdateTimer;
 
-        CancellationTokenSource _cancellationTokenSource;
-
-        protected override void OnCreate (Bundle bundle)
+        protected override void OnCreate (Bundle savedInstanceState)
         {
-            base.OnCreate (bundle);
+            base.OnCreate (savedInstanceState);
 
-            SetContentView (Resource.Layout.AudioPlayer);
-
-            InitializeExtrasFromIntent ();
-
-            _connection = new StreamingBackgroundServiceConnection (this);
-
-            var play = FindViewById<Button> (Resource.Id.playButton);
-            var pause = FindViewById<Button> (Resource.Id.pauseButton);
-            var stop = FindViewById<Button> (Resource.Id.stopButton);
-            var spentTime = FindViewById<TextView> (Resource.Id.SpentTime);
-            var leftTime = FindViewById<TextView> (Resource.Id.LeftTime);
-            _seekBar = FindViewById<SeekBar> (Resource.Id.SeekBar);
-
-            play.Click += (sender, args) => SendAudioCommand (StreamingBackgroundService.ACTION_PLAY);
-            pause.Click += (sender, args) => SendAudioCommand (StreamingBackgroundService.ACTION_PAUSE);
-            stop.Click += (sender, args) =>
-            {
-                SendAudioCommand (StreamingBackgroundService.ACTION_STOP);
-                _seekBar.Progress = 0;
-            };
-            _seekBar.ProgressChanged += (sender, e) =>
-            {
-                spentTime.Text = String.Format (TIME_FORMAT, TimeSpan.FromSeconds (_seekBar.Progress));
-                leftTime.Text = String.Format (TIME_FORMAT, TimeSpan.FromSeconds (_seekBar.Max - _seekBar.Progress));
-                if (e.FromUser && IsBound)
-                {
-                    _connection.Binder.Service.CurrentPosition = _seekBar.Progress;
-                }
-            };
+            Initialize ();
 
             SendAudioCommand (StreamingBackgroundService.ACTION_PLAY);
+        }
+
+        public static Intent CreateIntent(Context context, int albumID, int currentEpisodeID)
+        {
+            var intent = new Intent (context, typeof (AudioPlayerActivity));
+            intent.PutExtra (ALBUM_ID_INTENT_EXTRA, albumID);
+            intent.PutExtra (EPISODE_ID_INTENT_EXTRA, currentEpisodeID);
+            return intent;
+        }
+
+        protected override void OnStart ()
+        {
+            base.OnStart ();
+
+            SendAudioCommand (StreamingBackgroundService.ACTION_CONNECT);
+            StartUpdatingTimerViewsAndStates ();
+        }
+
+        protected override void OnStop ()
+        {
+            base.OnStop ();
+
+            if (IsBound)
+            {
+                UnbindService (_connection);
+                IsBound = false;
+            }
+            StopUpdatingTimerViewsAndStates ();
+        }
+
+        public bool IsBound { get; set; }
+
+        public Album CurrentAlbum { get; set; }
+
+        public AudioEpisode CurrentEpisode { get; set; }
+
+        void Initialize ()
+        {
+            InitializeExtrasFromIntent ();
+            InitializeViews ();
+
+            _uIUpdateTimer = new Timer (
+                o => RunOnUiThread (UpdateTimerViewsAndStatesFromPlayerService), // Must RunOnUiThread to update.
+                null,
+                Timeout.Infinite,
+                Timeout.Infinite
+            );
         }
 
         void InitializeExtrasFromIntent ()
@@ -81,38 +101,44 @@ namespace DrunkAudible.Mobile.Android
             }
         }
 
-        public static Intent CreateIntent(Context context, int albumID, int currentEpisodeID)
+        void InitializeViews ()
         {
-            var intent = new Intent (context, typeof (AudioPlayerActivity));
-            intent.PutExtra (ALBUM_ID_INTENT_EXTRA, albumID);
-            intent.PutExtra (EPISODE_ID_INTENT_EXTRA, currentEpisodeID);
-            return intent;
-        }
+            SetContentView (Resource.Layout.AudioPlayer);
 
-        protected override void OnStart ()
-        {
-            base.OnStart ();
-
-            StartUpdatingSeekBarProgress ();
-        }
-
-        protected override void OnStop ()
-        {
-            base.OnStop ();
-
-            if (IsBound)
+            _seekBar = FindViewById<SeekBar> (Resource.Id.SeekBar);
+            _spentTime = FindViewById<TextView> (Resource.Id.SpentTime);
+            _leftTime = FindViewById<TextView> (Resource.Id.LeftTime);
+            UpdateTimerViewsAndStates ((int) CurrentEpisode.Duration, (int) CurrentEpisode.CurrentTime);
+            _seekBar.StartTrackingTouch += (sender, e) => StopUpdatingTimerViewsAndStates ();
+            _seekBar.ProgressChanged += (sender, e) =>
             {
-                UnbindService (_connection);
-                IsBound = false;
-            }
-            StopUpdatingSeekBarProgress ();
+                // The player moves to the position which the user drags to.
+                if (e.FromUser && IsBound)
+                {
+                    UpdateTimerViewsAndStates (_seekBar.Max, _seekBar.Progress);
+                }
+            };
+            _seekBar.StopTrackingTouch += (sender, e) =>
+            {
+                _connection.Binder.Service.CurrentPosition = _seekBar.Progress;
+                StartUpdatingTimerViewsAndStates ();
+            };
+
+            _connection = new StreamingBackgroundServiceConnection (this);
+
+            var play = FindViewById<Button> (Resource.Id.playButton);
+            play.Click += (sender, args) => SendAudioCommand (StreamingBackgroundService.ACTION_PLAY);
+
+            var pause = FindViewById<Button> (Resource.Id.pauseButton);
+            pause.Click += (sender, args) => SendAudioCommand (StreamingBackgroundService.ACTION_PAUSE);
+
+            var stop = FindViewById<Button> (Resource.Id.stopButton);
+            stop.Click += (sender, args) =>
+            {
+                UpdateTimerViewsAndStates (_seekBar.Max, 0);
+                SendAudioCommand (StreamingBackgroundService.ACTION_PAUSE);
+            };
         }
-
-        public bool IsBound { get; set; }
-
-        public Album CurrentAlbum { get; set; }
-
-        public AudioEpisode CurrentEpisode { get; set; }
 
         void SendAudioCommand (string action)
         {
@@ -126,31 +152,47 @@ namespace DrunkAudible.Mobile.Android
             StartService (intent);
         }
 
-        void StartUpdatingSeekBarProgress ()
+        void StartUpdatingTimerViewsAndStates ()
         {
-            _cancellationTokenSource = new CancellationTokenSource ();
-            PeriodicTaskFactory.Start (
-                UpdateSeekBarProgress,
-                INTERVAL,
-                cancelToken: _cancellationTokenSource.Token);
+            _uIUpdateTimer.Change (0, INTERVAL);
         }
 
-        void StopUpdatingSeekBarProgress ()
+        void StopUpdatingTimerViewsAndStates ()
         {
-            if (_cancellationTokenSource != null)
-            {
-                _cancellationTokenSource.Cancel ();
-                _cancellationTokenSource = null;
-            }
+            _uIUpdateTimer.Change (Timeout.Infinite, Timeout.Infinite);
         }
 
-        void UpdateSeekBarProgress ()
+        void UpdateTimerViewsAndStatesFromPlayerService ()
         {
             if (IsBound && _connection.Binder.Service.IsPlaying)
             {
-                _seekBar.Max = _connection.Binder.Service.Duration;
-                _seekBar.Progress = _connection.Binder.Service.CurrentPosition;
+                UpdateTimerViewsAndStates (
+                    _connection.Binder.Service.Duration,
+                    _connection.Binder.Service.CurrentPosition
+                );
             }
+        }
+
+        void UpdateTimerViewsAndStates (int progressMax, int progress)
+        {
+            UpdateSeekBarProgress (progressMax, progress);
+            UpdateTimerTextViews (progressMax, progress);
+            CurrentEpisode.CurrentTime = progress;
+        }
+
+        void UpdateSeekBarProgress (int progressMax, int progress)
+        {
+            _seekBar.Max = progressMax;
+            _seekBar.Progress = progress;
+        }
+
+        void UpdateTimerTextViews (int progressMax, int progress)
+        {
+            _spentTime.Text = String.Format (TIME_FORMAT, TimeSpan.FromSeconds (progress));
+            _leftTime.Text = String.Format (
+                TIME_FORMAT,
+                TimeSpan.FromSeconds (progressMax - progress)
+            );
         }
     }
 }

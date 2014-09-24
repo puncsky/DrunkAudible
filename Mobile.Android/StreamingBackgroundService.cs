@@ -14,10 +14,11 @@ using Net = Android.Net;
 namespace DrunkAudible.Mobile.Android
 {
     [Service]
-    [IntentFilter (new[] { ACTION_PLAY, ACTION_PAUSE, ACTION_STOP })]
+    [IntentFilter (new[] { ACTION_CONNECT, ACTION_PLAY, ACTION_PAUSE, ACTION_STOP })]
     public class StreamingBackgroundService : Service, AudioManager.IOnAudioFocusChangeListener
     {
         // Actions
+        public const string ACTION_CONNECT = "com.puncsky.drunkaudible.mobile.android.CONNECT";
         public const string ACTION_PLAY = "com.puncsky.drunkaudible.mobile.android.action.PLAY";
         public const string ACTION_PAUSE = "com.puncsky.drunkaudible.mobile.android.action.PAUSE";
         public const string ACTION_STOP = "com.puncsky.drunkaudible.mobile.android.STOP";

@@ -10,11 +10,11 @@ namespace DrunkAudible.Data.Models
         [Ignore]
         public Author[] Authors { get; set; }
 
-        public double CurrentTime { get; set; }
+        public double CurrentTime { get; set; } // in seconds
 
         public String Description { get; set; }
 
-        public double Duration { get; set; }
+        public double Duration { get; set; } // in seconds
 
         public bool IsPurchased { get; set; }
 
