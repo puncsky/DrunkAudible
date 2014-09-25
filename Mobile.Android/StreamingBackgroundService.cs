@@ -10,6 +10,7 @@ using Android.OS;
 using Android.Util;
 using DrunkAudible.Data.Models;
 using Net = Android.Net;
+using System.Threading;
 
 namespace DrunkAudible.Mobile.Android
 {
@@ -26,6 +27,7 @@ namespace DrunkAudible.Mobile.Android
         const String DEBUG_TAG = "StreamingBackgroundService";
 
         const int MILLISECONDS_PER_SECOND = 1000;
+        const int EPISODE_CURRENT_TIME_UPDATE_INTERVAL = 10000; // in Milliseconds
 
         const String ALBUM_ID_INTENT_EXTRA = "AlbumID";
         const String EPISODE_ID_INTENT_EXTRA = "EpisodeID";
@@ -40,12 +42,16 @@ namespace DrunkAudible.Mobile.Android
 
         const int NotificationId = 1;
 
-        /// <summary>
-        /// On create simply detect some of our managers
-        /// </summary>
         public override void OnCreate ()
         {
             base.OnCreate ();
+
+            var episodeProgressUpdateTimer = new Timer (
+                o => UpdateEpisodeCurrentTime(),
+                null,
+                0,
+                EPISODE_CURRENT_TIME_UPDATE_INTERVAL
+            );
 
             // Find our audio and notificaton managers
             _audioManager = (AudioManager)GetSystemService (AudioService);
@@ -178,7 +184,7 @@ namespace DrunkAudible.Mobile.Android
         {
             get
             {
-                return _player.IsPlaying;
+                return _player != null && _player.IsPlaying;
             }
         }
 
@@ -189,12 +195,18 @@ namespace DrunkAudible.Mobile.Android
             get { return _currentEpisode; }
             set
             {
-                if (value != _currentEpisode)
+                var isPlaying = IsPlaying;
+                var isValidChange = value != null && value != _currentEpisode;
+                var isFirstAssignment = _currentEpisode == null;
+                if (isValidChange)
                 {
                     Stop ();
+                    _currentEpisode = value;
+                    if (isFirstAssignment || isPlaying)
+                    {
+                        Play ();
+                    }
                 }
-                _currentEpisode = value;
-                Play ();
             }
         }
 
@@ -262,7 +274,8 @@ namespace DrunkAudible.Mobile.Android
                     Log.Debug (DEBUG_TAG, "Could not get audio focus");
                 }
 
-                _player.PrepareAsync ();
+                _player.Prepare();
+                CurrentPosition = (int) _currentEpisode.CurrentTime;
 
                 AquireWifiLock ();
                 StartForeground ();
@@ -381,6 +394,15 @@ namespace DrunkAudible.Mobile.Android
                 CurrentEpisode = CurrentAlbum
                     .Episodes
                     .FirstOrDefault (e => e.ID == intent.GetIntExtra (EPISODE_ID_INTENT_EXTRA, -1));
+            }
+        }
+
+        void UpdateEpisodeCurrentTime ()
+        {
+            if (_player != null)
+            {
+                CurrentEpisode.CurrentTime = CurrentPosition;
+                DatabaseSingleton.Orm.Database.InsertOrReplace (CurrentEpisode);
             }
         }
     }

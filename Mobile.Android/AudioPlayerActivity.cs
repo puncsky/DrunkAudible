@@ -34,7 +34,7 @@ namespace DrunkAudible.Mobile.Android
 
             Initialize ();
 
-            SendAudioCommand (StreamingBackgroundService.ACTION_PLAY);
+            SendAudioCommand (StreamingBackgroundService.ACTION_CONNECT);
         }
 
         public static Intent CreateIntent(Context context, int albumID, int currentEpisodeID)
