@@ -17,13 +17,13 @@ namespace DrunkAudible.Mobile.Tests
             var orm = new ObjectRelationalMapping ();
             orm.ClearAll ();
             var expectedAlbum = new Album {
-                ID = 1,
+                Id = 1,
                 Title = "SampleTitle1",
-                Authors = new[] { new Author { ID = 1, Name = "SampleAuthor1" } },
+                Authors = new[] { new Author { Id = 1, Name = "SampleAuthor1" } },
                 Narrator = "SampleNarrator1",
                 Episodes = new[] {
-                    new AudioEpisode { ID = 1, Title = "Episode1" },
-                    new AudioEpisode { ID = 2, Title = "Episode2" },
+                    new AudioEpisode { Id = 1, Title = "Episode1" },
+                    new AudioEpisode { Id = 2, Title = "Episode2" },
                 },
             };
 
@@ -56,23 +56,23 @@ namespace DrunkAudible.Mobile.Tests
             var orm = new ObjectRelationalMapping ();
             orm.ClearAll ();
             var existingAlbum = new Album {
-                ID = 1,
+                Id = 1,
                 Title = "SampleTitle1",
-                Authors = new[] { new Author { ID = 1, Name = "SampleAuthor1" } },
+                Authors = new[] { new Author { Id = 1, Name = "SampleAuthor1" } },
                 Narrator = "SampleNarrator1",
                 Episodes = new[] {
-                    new AudioEpisode { ID = 1, Title = "Episode1" },
-                    new AudioEpisode { ID = 2, Title = "Episode2" },
+                    new AudioEpisode { Id = 1, Title = "Episode1" },
+                    new AudioEpisode { Id = 2, Title = "Episode2" },
                 },
             };
             var expectedAlbum = new Album {
-                ID = 1,
+                Id = 1,
                 Title = "SampleTitle2",
-                Authors = new[] { new Author { ID = 2, Name = "SampleAuthor2" } },
+                Authors = new[] { new Author { Id = 2, Name = "SampleAuthor2" } },
                 Narrator = "SampleNarrator2",
                 Episodes = new[] {
-                    new AudioEpisode { ID = 1, Title = "Episode1" },
-                    new AudioEpisode { ID = 2, Title = "Episode2" },
+                    new AudioEpisode { Id = 1, Title = "Episode1" },
+                    new AudioEpisode { Id = 2, Title = "Episode2" },
                 },
             };
             orm.InsertOrUpdate (existingAlbum);
@@ -107,23 +107,23 @@ namespace DrunkAudible.Mobile.Tests
             orm.ClearAll ();
             var expectedAlbums = new Album[] {
                 new Album {
-                    ID = 1,
+                    Id = 1,
                     Title = "SampleTitle1",
-                    Authors = new[] { new Author { ID = 1, Name = "SampleAuthor1" } },
+                    Authors = new[] { new Author { Id = 1, Name = "SampleAuthor1" } },
                     Narrator = "SampleNarrator1",
                     Episodes = new[] {
-                        new AudioEpisode { ID = 1, Title = "Episode1" },
-                        new AudioEpisode { ID = 2, Title = "Episode2" },
+                        new AudioEpisode { Id = 1, Title = "Episode1" },
+                        new AudioEpisode { Id = 2, Title = "Episode2" },
                     },
                 },
                 new Album {
-                    ID = 2,
+                    Id = 2,
                     Title = "SampleTitle2",
-                    Authors = new[] { new Author { ID = 1, Name = "SampleAuthor1" } },
+                    Authors = new[] { new Author { Id = 1, Name = "SampleAuthor1" } },
                     Narrator = "SampleAuthor1",
                     Episodes = new[] {
-                        new AudioEpisode { ID = 1, Title = "Episode1" },
-                        new AudioEpisode { ID = 2, Title = "Episode2" },
+                        new AudioEpisode { Id = 1, Title = "Episode1" },
+                        new AudioEpisode { Id = 2, Title = "Episode2" },
                     },
                 },
             };

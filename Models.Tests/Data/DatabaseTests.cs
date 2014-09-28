@@ -15,19 +15,19 @@ namespace DrunkAudible.Mobile.Tests
             get {
                 return new[] {
                     new Author {
-                        ID = 1,
+                        Id = 1,
                         Name = "金庸",
                     },
                     new Author {
-                        ID = 2,
+                        Id = 2,
                         Name = "高晓松",
                     },
                     new Author {
-                        ID = 3,
+                        Id = 3,
                         Name = "梁冬",
                     },
                     new Author {
-                        ID = 4,
+                        Id = 4,
                         Name = "吴伯凡",
                     },
                 };
@@ -38,13 +38,13 @@ namespace DrunkAudible.Mobile.Tests
             get {
                 return new[] {
                     new Album {
-                        ID = 1,
+                        Id = 1,
                         Title = "天龙八部",
-                        Authors = new[] { new Author { ID = 1, Name = "金庸" } },
+                        Authors = new[] { new Author { Id = 1, Name = "金庸" } },
                         Narrator = "倪清",
                         Episodes = new[] {
                             new AudioEpisode {
-                                ID = 1,
+                                Id = 1,
                                 Title = "青衫磊落险峰行",
                                 PartIndex = 1,
                                 RemoteURL = "http://115.28.189.40/tingguo/novel/tlbb/tlbb1.flab",
@@ -53,12 +53,12 @@ namespace DrunkAudible.Mobile.Tests
                         },
                     },
                     new Album {
-                        ID = 2,
+                        Id = 2,
                         Title = "冬吴相对论",
-                        Authors = new[] { new Author { ID = 3, Name = "梁冬" }, new Author { ID = 4, Name = "吴伯凡" } },
+                        Authors = new[] { new Author { Id = 3, Name = "梁冬" }, new Author { Id = 4, Name = "吴伯凡" } },
                         Episodes = new[] {
                             new AudioEpisode {
-                                ID = 2,
+                                Id = 2,
                                 PartIndex = 451,
                                 Title = "财商教育",
                                 RemoteURL = "http://fruitlab.net/tinggo/tuokouxiu/dwxdl/dwxdl_451.flab",
@@ -67,9 +67,9 @@ namespace DrunkAudible.Mobile.Tests
                         },
                     },
                     new Album {
-                        ID = 3,
+                        Id = 3,
                         Title = "笑傲江湖",
-                        Authors = new[] { new Author { ID = 1, Name = "金庸" } },
+                        Authors = new[] { new Author { Id = 1, Name = "金庸" } },
                     },
                 };
             }
@@ -79,23 +79,23 @@ namespace DrunkAudible.Mobile.Tests
             get {
                 return new[] {
                     new AudioEpisode {
-                        ID = 1,
+                        Id = 1,
                         Title = "青衫磊落险峰行",
                         PartIndex = 1,
                         RemoteURL = "http://115.28.189.40/tingguo/novel/tlbb/tlbb1.flab",
                         Duration = 5589.468,
-                        Authors = new[] { new Author { ID = 1, Name = "金庸" } },
+                        Authors = new[] { new Author { Id = 1, Name = "金庸" } },
                         Narrator = "倪清",
                     },
                     new AudioEpisode {
-                        ID = 2,
+                        Id = 2,
                         PartIndex = 451,
                         Title = "财商教育",
                         RemoteURL = "http://fruitlab.net/tinggo/tuokouxiu/dwxdl/dwxdl_451.flab",
                         Duration = 1509.222,
                         Authors = new[] {
-                            new Author { ID = 3, Name = "梁冬" },
-                            new Author { ID = 4, Name = "吴伯凡" }
+                            new Author { Id = 3, Name = "梁冬" },
+                            new Author { Id = 4, Name = "吴伯凡" }
                         },
                     },
                 };
@@ -106,11 +106,11 @@ namespace DrunkAudible.Mobile.Tests
             get {
                 return new[] {
                     new User {
-                        ID = 1,
+                        Id = 1,
                         Alias = "Puncsky",
                     },
                     new User {
-                        ID = 2,
+                        Id = 2,
                         Alias = "Dobby",
                     },
                 };

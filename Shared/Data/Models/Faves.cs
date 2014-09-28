@@ -9,11 +9,9 @@ namespace DrunkAudible.Data.Models
     {
         [PrimaryKey]
         [AutoIncrement]
-        public int OwnerID { get; set; }
+        public int OwnerId { get; set; }
 
         public DateTime LastUpdateTime { get; set; }
-
-
     }
 }
 

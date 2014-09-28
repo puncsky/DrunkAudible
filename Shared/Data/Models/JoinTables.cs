@@ -10,9 +10,9 @@ namespace DrunkAudible.Data.Models.JoinTables
     [Table ("JoinTable_AudioEpisodesToAuthors")]
     public class AudioEpisodesToAuthors
     {
-        public int EpisodeID { get; set; }
+        public int EpisodeId { get; set; }
 
-        public int AuthorID { get; set; }
+        public int AuthorId { get; set; }
 
         public DateTime LastUpdateTime { get; set; }
     }
@@ -23,11 +23,11 @@ namespace DrunkAudible.Data.Models.JoinTables
     {
         [PrimaryKey]
         [AutoIncrement]
-        public int ID { get; set; }
+        public int Id { get; set; }
 
-        public int EpisodeID { get; set; }
+        public int EpisodeId { get; set; }
 
-        public int AlbumID { get; set; }
+        public int AlbumId { get; set; }
 
         public DateTime LastUpdateTime { get; set; }
     }
@@ -38,11 +38,11 @@ namespace DrunkAudible.Data.Models.JoinTables
     {
         [PrimaryKey]
         [AutoIncrement]
-        public int ID { get; set; }
+        public int Id { get; set; }
 
-        public int AlbumID { get; set; }
+        public int AlbumId { get; set; }
 
-        public int AuthorID { get; set; }
+        public int AuthorId { get; set; }
 
         public DateTime LastUpdateTime { get; set; }
     }
@@ -50,9 +50,9 @@ namespace DrunkAudible.Data.Models.JoinTables
     [Table ("JoinTable_UsersToFaveAlbum")]
     public class UsersToFaveAlbum
     {
-        public int UserID { get; set; }
+        public int UserId { get; set; }
 
-        public int AlbumID { get; set; }
+        public int AlbumId { get; set; }
 
         public DateTime LastUpdateTime { get; set; }
     }
@@ -60,9 +60,9 @@ namespace DrunkAudible.Data.Models.JoinTables
     [Table ("JoinTable_UsersToFaveEpisodes")]
     public class UsersToFaveEpisodes
     {
-        public int UserID { get; set; }
+        public int UserId { get; set; }
 
-        public int EpisodeID { get; set; }
+        public int EpisodeId { get; set; }
 
         public DateTime LastUpdateTime { get; set; }
     }
@@ -70,9 +70,9 @@ namespace DrunkAudible.Data.Models.JoinTables
     [Table ("JoinTable_UsersToFaveAuthors")]
     public class UsersToFaveAuthors
     {
-        public int UserID { get; set; }
+        public int UserId { get; set; }
 
-        public int EpisodeID { get; set; }
+        public int EpisodeId { get; set; }
 
         public DateTime LastUpdateTime { get; set; }
     }

@@ -29,7 +29,7 @@ namespace DrunkAudible.Mobile.Android
         void OnAlbumItemClicked_GoTo_EpisodesListViewActivity(object sender, AdapterView.ItemClickEventArgs e)
         {
             var selectedAlbum = DatabaseSingleton.Orm.Albums [e.Position];
-            StartActivity (EpisodesListActivity.CreateIntent (this, selectedAlbum.ID));
+            StartActivity (EpisodesListActivity.CreateIntent (this, selectedAlbum.Id));
         }
 
         #region SetDatabase

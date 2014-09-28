@@ -91,13 +91,13 @@ namespace DrunkAudible.Mobile.Android
                 CurrentAlbum = DatabaseSingleton
                     .Orm
                     .Albums
-                    .FirstOrDefault (a => a.ID == Intent.GetIntExtra (ALBUM_ID_INTENT_EXTRA, -1));
+                    .FirstOrDefault (a => a.Id == Intent.GetIntExtra (ALBUM_ID_INTENT_EXTRA, -1));
             }
             if (Intent.HasExtra (EPISODE_ID_INTENT_EXTRA))
             {
                 CurrentEpisode = CurrentAlbum
                     .Episodes
-                    .FirstOrDefault (e => e.ID == Intent.GetIntExtra (EPISODE_ID_INTENT_EXTRA, -1));
+                    .FirstOrDefault (e => e.Id == Intent.GetIntExtra (EPISODE_ID_INTENT_EXTRA, -1));
             }
         }
 

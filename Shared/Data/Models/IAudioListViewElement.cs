@@ -7,7 +7,7 @@ namespace DrunkAudible.Data.Models
 {
 	public interface IAudioListViewElement
 	{
-        int ID { get; }
+        int Id { get; }
 
         String Title { get; }
 

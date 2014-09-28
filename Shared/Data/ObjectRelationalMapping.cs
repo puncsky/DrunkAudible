@@ -64,12 +64,12 @@ namespace DrunkAudible.Data
             // object that cannot be stored directly into the same table.
             if (album.Authors != null)
             {
-                SaveAlbumAuthors (album.Authors.ToArray (), album.ID);
+                SaveAlbumAuthors (album.Authors.ToArray (), album.Id);
 
             }
             if (album.Episodes != null)
             {
-                SaveAlbumEpisodes (album.Episodes.ToArray (), album.ID);
+                SaveAlbumEpisodes (album.Episodes.ToArray (), album.Id);
             }
         }
 
@@ -134,7 +134,7 @@ namespace DrunkAudible.Data
         {
             // Update related entries in the join table.
             Database.CreateTable<AlbumToAuthors> ();
-            var oldEntries = Database.Table<AlbumToAuthors> ().Where (a => a.AlbumID == albumID).ToArray ();
+            var oldEntries = Database.Table<AlbumToAuthors> ().Where (a => a.AlbumId == albumID).ToArray ();
             foreach (var oldEntry in oldEntries)
             {
                 Database.Delete (oldEntry);
@@ -143,8 +143,8 @@ namespace DrunkAudible.Data
             {
                 Database.Insert (new AlbumToAuthors ()
                     {
-                        AlbumID = albumID,
-                        AuthorID = author.ID,
+                        AlbumId = albumID,
+                        AuthorId = author.Id,
                     });
             }
 
@@ -160,7 +160,7 @@ namespace DrunkAudible.Data
         {
             // Update related entries in the join table.
             Database.CreateTable<AudioEpisodesToAlbum> ();
-            var oldEntries = Database.Table<AudioEpisodesToAlbum> ().Where (a => a.AlbumID == albumID).ToArray ();
+            var oldEntries = Database.Table<AudioEpisodesToAlbum> ().Where (a => a.AlbumId == albumID).ToArray ();
             foreach (var oldEntry in oldEntries)
             {
                 Database.Delete (oldEntry);
@@ -169,8 +169,8 @@ namespace DrunkAudible.Data
             {
                 Database.Insert (new AudioEpisodesToAlbum ()
                     {
-                        AlbumID = albumID,
-                        EpisodeID = episode.ID,
+                        AlbumId = albumID,
+                        EpisodeId = episode.Id,
                     });
             }
 
@@ -185,15 +185,15 @@ namespace DrunkAudible.Data
         {
             var joinTableLookUp = Database
                 .Table<AlbumToAuthors> ()
-                .ToLookup (a => a.AlbumID);
+                .ToLookup (a => a.AlbumId);
 
             var authorsDictionary = Database
                 .Table<Author> ()
-                .ToDictionary (a => a.ID);
+                .ToDictionary (a => a.Id);
 
             // Set up the related property Author, because Album table in the database ingored it.
             foreach (var album in albums) {
-                var relatedAuthorIDs = joinTableLookUp[album.ID].Select(i => i.AuthorID);
+                var relatedAuthorIDs = joinTableLookUp[album.Id].Select(i => i.AuthorId);
 
                 album.Authors = relatedAuthorIDs.Select (r => authorsDictionary [r]).ToArray ();
             }
@@ -203,15 +203,15 @@ namespace DrunkAudible.Data
         {
             var joinTableLookUp = Database
                 .Table<AudioEpisodesToAlbum> ()
-                .ToLookup (a => a.AlbumID);
+                .ToLookup (a => a.AlbumId);
 
             var episodesDictionary = Database
                 .Table<AudioEpisode> ()
-                .ToDictionary (a => a.ID);
+                .ToDictionary (a => a.Id);
 
             // Set up the related property Author, because Album table in the database ingored it.
             foreach (var album in albums) {
-                var relatedEpisodeIDs = joinTableLookUp[album.ID].Select(i => i.EpisodeID);
+                var relatedEpisodeIDs = joinTableLookUp[album.Id].Select(i => i.EpisodeId);
 
                 album.Episodes = relatedEpisodeIDs.Select (r => episodesDictionary [r]).ToArray ();
             }

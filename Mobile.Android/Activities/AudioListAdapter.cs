@@ -90,9 +90,9 @@ namespace DrunkAudible.Mobile.Android
                 narratedBy.Text = String.Empty;
             }
 
-            if (_images.ContainsKey (item.ID))
+            if (_images.ContainsKey (item.Id))
             {
-                icon.SetImageBitmap (_images [item.ID]);
+                icon.SetImageBitmap (_images [item.Id]);
             }
             else
             {
@@ -152,7 +152,7 @@ namespace DrunkAudible.Mobile.Android
             for (var position = listView.FirstVisiblePosition; position <= listView.LastVisiblePosition; position++)
             {
                 var audio = _items [position];
-                if (!String.IsNullOrEmpty (audio.IconUrl) && !_images.ContainsKey (audio.ID))
+                if (!String.IsNullOrEmpty (audio.IconUrl) && !_images.ContainsKey (audio.Id))
                 {
                     StartImageDownload (listView, position, audio);
                 }
@@ -161,7 +161,7 @@ namespace DrunkAudible.Mobile.Android
 
         void StartImageDownload (ListView listView, int position, IAudioListViewElement audio)
         {
-            if (_imageDownloadsInProgress.Contains (audio.ID))
+            if (_imageDownloadsInProgress.Contains (audio.Id))
             {
                 return;
             }
@@ -175,7 +175,7 @@ namespace DrunkAudible.Mobile.Android
             }
             else
             {
-                _imageDownloadsInProgress.Add (audio.ID);
+                _imageDownloadsInProgress.Add (audio.Id);
 
                 _imageDownloader.GetImageAsync (url).ContinueWith (t =>
                     {
@@ -191,8 +191,8 @@ namespace DrunkAudible.Mobile.Android
 
         void FinishImageDownload (ListView listView, int position, IAudioListViewElement audio, Bitmap image)
         {
-            _images [audio.ID] = image;
-            _imageDownloadsInProgress.Remove (audio.ID);
+            _images [audio.Id] = image;
+            _imageDownloadsInProgress.Remove (audio.Id);
 
             // Locate the the child view and update.
             var firstPostion = listView.FirstVisiblePosition - listView.HeaderViewsCount;

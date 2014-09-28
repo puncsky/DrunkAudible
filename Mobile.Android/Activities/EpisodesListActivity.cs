@@ -40,7 +40,7 @@ namespace DrunkAudible.Mobile.Android
             if (Intent.HasExtra (ALBUM_ID_INTENT_EXTRA))
             {
                 var albumID = Intent.GetIntExtra (ALBUM_ID_INTENT_EXTRA, -1);
-                _album = DatabaseSingleton.Orm.Albums.FirstOrDefault (a => a.ID == albumID);
+                _album = DatabaseSingleton.Orm.Albums.FirstOrDefault (a => a.Id == albumID);
             }
         }
 
@@ -48,14 +48,14 @@ namespace DrunkAudible.Mobile.Android
         {
             var selectedEpisode = _album.Episodes [e.Position];
 
-            if (AndroidAudioDownloader.AudioViewsDownloadInProgress.ContainsKey (selectedEpisode.RemoteURL))
+            if (AndroidAudioDownloader.ViewsDownloadInProgressByAudioId.ContainsKey (selectedEpisode.RemoteURL))
             {
                 return;
             }
 
             if (AudioDownloader.HasLocalFile (selectedEpisode.RemoteURL, selectedEpisode.FileSize))
             {
-                StartActivity (AudioPlayerActivity.CreateIntent (this, _album.ID, selectedEpisode.ID));
+                StartActivity (AudioPlayerActivity.CreateIntent (this, _album.Id, selectedEpisode.Id));
             }
             else
             {

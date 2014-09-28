@@ -44,20 +44,20 @@
     <Reference Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AudioListAdapter.cs" />
-    <Compile Include="EpisodesListActivity.cs" />
     <Compile Include="DatabaseSingleton.cs" />
-    <Compile Include="AudioPlayerActivity.cs" />
-    <Compile Include="StreamingBackgroundService.cs" />
-    <Compile Include="MusicBroadcastReceiver.cs" />
-    <Compile Include="StreamingBackgroundServiceBinder.cs" />
-    <Compile Include="StreamingBackgroundServiceConnection.cs" />
     <Compile Include="AndroidImageDownloader.cs" />
     <Compile Include="AudioListView.cs" />
     <Compile Include="AndroidAudioDownloader.cs" />
+    <Compile Include="Activities\AudioPlayerActivity.cs" />
+    <Compile Include="Activities\EpisodesListActivity.cs" />
+    <Compile Include="Activities\AudioListAdapter.cs" />
+    <Compile Include="Activities\MainActivity.cs" />
+    <Compile Include="Services\MusicBroadcastReceiver.cs" />
+    <Compile Include="Services\StreamingBackgroundService.cs" />
+    <Compile Include="Services\StreamingBackgroundServiceBinder.cs" />
+    <Compile Include="Services\StreamingBackgroundServiceConnection.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -89,6 +89,8 @@
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Resources\drawable-hdpi\" />
+    <Folder Include="Activities\" />
+    <Folder Include="Services\" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\DrunkAudible.Mobile.SQLite.db3" />
