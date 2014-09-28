@@ -1,15 +1,10 @@
-﻿// 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
+﻿// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
 using System;
 using System.Net;
 using System.Threading.Tasks;
 using System.IO;
 using System.Threading;
-using Android.Widget;
-using System.Collections.Generic;
-using Android.Views;
-using Android.Util;
-using DrunkAudible.Mobile.Android;
 
 namespace DrunkAudible.Mobile
 {
@@ -18,32 +13,23 @@ namespace DrunkAudible.Mobile
         const int BUFFER_SIZE = 4096;
         const byte XOR_MAGIC_KEY = 0xAA;
         const int CONCURRENT_CONNECTION_MAX = 2;
-        const String DEBUG_TAG = "AudioDownloader";
 
         static readonly Semaphore _throttle = new Semaphore (CONCURRENT_CONNECTION_MAX, CONCURRENT_CONNECTION_MAX);
-        static readonly Dictionary<String, View> _audioViewsDownloadInProgress = new Dictionary<String, View> ();
 
-        // TODO decouple for Android-and-iOS shared abstraction.
-        public static async Task<int> CreateDownloadTask(
+        public virtual async Task<int> CreateDownloadTask(
             string url,
-            ProgressBar progressBar
+            IProgress<DownloadBytesProgress> progressReporter
         )
         {
-            var progressReporter = new Progress<DownloadBytesProgress> ();
-            progressReporter.ProgressChanged += (s, args) =>
-            {
-                progressBar.Progress = (int) (progressBar.Max * args.PercentComplete);
-            };
-
             var receivedBytes = 0;
             var client = new WebClient ();
 
-            progressBar.Indeterminate = true;
+            OnStartWait ();
             using (var storage = OpenStorage (url))
             using (var stream = await client.OpenReadTaskAsync (url))
             {
                 _throttle.WaitOne ();
-                progressBar.Indeterminate = false;
+                OnStopWait ();
 
                 var buffer = new byte[BUFFER_SIZE];
                 var totalBytes = Int32.Parse (client.ResponseHeaders [HttpResponseHeader.ContentLength]);
@@ -65,12 +51,29 @@ namespace DrunkAudible.Mobile
                     if (progressReporter != null)
                     {
                         var args = new DownloadBytesProgress (url, receivedBytes, totalBytes);
-                        ((IProgress<DownloadBytesProgress>) progressReporter).Report (args);
+                        progressReporter.Report (args);
                     }
                 }
             }
 
             return receivedBytes;
+        }
+
+        /// <summary>
+        /// Override this method to do something while the downloader starts to wait for the throttle.
+        /// e.g. Update the UI showing that the application is waiting for download.
+        /// </summary>
+        protected virtual void OnStartWait ()
+        {
+        }
+
+        /// <summary>
+        /// Override this method to do something while the downloader stops to wait for the throttle and starts to
+        /// download.
+        /// e.g. Update the UI showing that the application stops waiting and starts to download.
+        /// </summary>
+        protected virtual void OnStopWait ()
+        {
         }
 
         public static bool HasLocalFile (String url)
@@ -95,40 +98,6 @@ namespace DrunkAudible.Mobile
             return Path.Combine (documentsPath, fileName);
         }
 
-        public static Dictionary<String, View> AudioViewsDownloadInProgress
-        { 
-            get { return _audioViewsDownloadInProgress; }
-        }
-
-        public static async Task StartDownloadAsync(int position, String url, ListView listView)
-        {
-            if (AudioViewsDownloadInProgress.ContainsKey (url))
-            {
-                return;
-            }
-
-            // Locate the the child view and update.
-            var firstPostion = listView.FirstVisiblePosition - listView.HeaderViewsCount;
-            var childIndex = position - firstPostion;
-            if (0 <= childIndex && childIndex < listView.ChildCount)
-            {
-                var view = listView.GetChildAt (childIndex);
-                var progressBar = view.FindViewById<ProgressBar> (Resource.Id.DownloadProgress);
-
-                AudioViewsDownloadInProgress.Add (url, view);
-
-                await AudioDownloader.CreateDownloadTask (url, progressBar).ContinueWith (task =>
-                    {
-                        if (!task.IsFaulted)
-                        {
-                            AudioViewsDownloadInProgress.Remove(url);
-                            Log.Debug (DEBUG_TAG, "Downloaded {0} bytes.", task.Result);
-                        }
-                    }
-                );
-            }
-        }
-
         static Stream OpenStorage (String url)
         {
             return File.Create (GetFilePath (url));
@@ -143,4 +112,3 @@ namespace DrunkAudible.Mobile
         }
     }
 }
-

@@ -57,6 +57,7 @@
     <Compile Include="StreamingBackgroundServiceConnection.cs" />
     <Compile Include="AndroidImageDownloader.cs" />
     <Compile Include="AudioListView.cs" />
+    <Compile Include="AndroidAudioDownloader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

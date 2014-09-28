@@ -48,7 +48,7 @@ namespace DrunkAudible.Mobile.Android
         {
             var selectedEpisode = _album.Episodes [e.Position];
 
-            if (AudioDownloader.AudioViewsDownloadInProgress.ContainsKey (selectedEpisode.RemoteURL))
+            if (AndroidAudioDownloader.AudioViewsDownloadInProgress.ContainsKey (selectedEpisode.RemoteURL))
             {
                 return;
             }
@@ -59,7 +59,7 @@ namespace DrunkAudible.Mobile.Android
             }
             else
             {
-                await AudioDownloader.StartDownloadAsync (e.Position, selectedEpisode.RemoteURL, ListView);
+                await AndroidAudioDownloader.StartDownloadAsync (e.Position, selectedEpisode.RemoteURL, ListView);
             }
         }
     }
