@@ -58,6 +58,9 @@
     <Compile Include="Services\StreamingBackgroundService.cs" />
     <Compile Include="Services\StreamingBackgroundServiceBinder.cs" />
     <Compile Include="Services\StreamingBackgroundServiceConnection.cs" />
+    <Compile Include="Activities\IconAndTitleItemListAdapter.cs" />
+    <Compile Include="Activities\AlbumListAdapter.cs" />
+    <Compile Include="Activities\ViewExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

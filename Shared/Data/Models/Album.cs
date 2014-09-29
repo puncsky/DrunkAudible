@@ -6,7 +6,7 @@ using SQLite;
 
 namespace DrunkAudible.Data.Models
 {
-    public class Album : IAudioListViewElement
+    public class Album : IManMadeItem, IIconAndTitleItem
     {
         [Ignore]
         public Author[] Authors { get; set; }

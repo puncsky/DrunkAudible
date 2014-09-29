@@ -1,12 +1,11 @@
 // (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
-using System.Collections.Generic;
 using System;
 
 namespace DrunkAudible.Data.Models
 {
-	public interface IAudioListViewElement
-	{
+    public interface IManMadeItem
+    {
         int Id { get; }
 
         String Title { get; }
@@ -14,8 +13,6 @@ namespace DrunkAudible.Data.Models
         Author[] Authors { get; }
 
         String Narrator { get; }
-
-        String IconUrl { get; }
-	}
+    }
 }
 

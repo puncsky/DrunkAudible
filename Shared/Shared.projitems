@@ -21,14 +21,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\MD5.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ThrottledHttp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Models\AudioEpisode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\Models\AudioSeries.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Models\Author.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Models\Faves.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\Models\IAudioListViewElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Models\JoinTables.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Models\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\OrmInitializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\DownloadBytesProgress.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\AudioDownloader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Models\IIconAndTitleItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Models\Album.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Models\IManMadeItem.cs" />
   </ItemGroup>
 </Project>

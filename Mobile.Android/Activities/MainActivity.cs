@@ -21,7 +21,7 @@ namespace DrunkAudible.Mobile.Android
 
             SetAssetDatabase ();
 
-            ListAdapter = new AudioListAdapter (this, DatabaseSingleton.Orm.Albums);
+            ListAdapter = new AlbumListAdapter (this, DatabaseSingleton.Orm.Albums);
 
             ListView.ItemClick += OnAlbumItemClicked_GoTo_EpisodesListViewActivity;
         }
