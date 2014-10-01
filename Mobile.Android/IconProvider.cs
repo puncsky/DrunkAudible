@@ -26,7 +26,7 @@ namespace DrunkAudible.Mobile.Android
             return tabView;
         }
 
-        static void ConvertTextViewToIcon (AssetManager assets, TextView textViewToConvert)
+        public static void ConvertTextViewToIcon (AssetManager assets, TextView textViewToConvert)
         {
             Typeface font = Typeface.CreateFromAsset(assets, ICON_FONT_FILENAME);
             textViewToConvert.SetTypeface (font, TypefaceStyle.Normal);

@@ -16,7 +16,7 @@ namespace DrunkAudible.Mobile.Android
     {
         StreamingBackgroundServiceConnection _connection;
 
-        const int INTERVAL = 100; // milliseconds per update of audio player seekbar.
+        const int INTERVAL = 200; // milliseconds per update of UI.
 
         const String TIME_FORMAT = "{0:mm\\:ss}";
 
@@ -30,6 +30,7 @@ namespace DrunkAudible.Mobile.Android
         TextView _spentTime;
         TextView _leftTime;
         Timer _uIUpdateTimer;
+        Button _playOrPauseButton;
 
         public override View OnCreateView (LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState)
@@ -44,8 +45,6 @@ namespace DrunkAudible.Mobile.Android
             base.OnActivityCreated (savedInstanceState);
 
             Initialize ();
-
-            SendAudioCommand (StreamingBackgroundService.ACTION_CONNECT);
         }
 
         public static Intent CreateIntent(Context context, int albumID, int currentEpisodeID)
@@ -85,6 +84,14 @@ namespace DrunkAudible.Mobile.Android
         }
 
         public bool IsBound { get; set; }
+
+        public bool IsPlaying
+        {
+            get
+            {
+                return IsBound && _connection.Binder.Service.IsPlaying;
+            }
+        }
 
         public Album CurrentAlbum { get { return _currentAlbum; } set { _currentAlbum = value; } }
 
@@ -144,23 +151,24 @@ namespace DrunkAudible.Mobile.Android
                 StartUpdateTimerViewsAndStatesFromPlayerService ();
             };
 
-            var play = Activity.FindViewById<Button> (Resource.Id.playButton);
-            play.Click += (sender, args) => SendAudioCommand (StreamingBackgroundService.ACTION_PLAY);
-
-            var pause = Activity.FindViewById<Button> (Resource.Id.pauseButton);
-            pause.Click += (sender, args) => SendAudioCommand (StreamingBackgroundService.ACTION_PAUSE);
-
-            var stop = Activity.FindViewById<Button> (Resource.Id.stopButton);
-            stop.Click += (sender, args) =>
+            _playOrPauseButton = Activity.FindViewById<Button> (Resource.Id.PlayOrPauseButton);
+            IconProvider.ConvertTextViewToIcon (Activity.Assets, _playOrPauseButton);
+            _playOrPauseButton.Click += (sender, args) =>
             {
-                UpdateTimerViewsAndStates (_seekBar.Max, 0);
-                SendAudioCommand (StreamingBackgroundService.ACTION_PAUSE);
+                if (!IsPlaying)
+                {
+                    SendAudioCommand (StreamingBackgroundService.ACTION_PLAY);
+                }
+                else
+                {
+                    SendAudioCommand (StreamingBackgroundService.ACTION_PAUSE);
+                }
             };
         }
 
         void SendAudioCommand (string action)
         {
-            var intent = StreamingBackgroundService.CreateIntent (action);
+            var intent = StreamingBackgroundService.CreateIntent (Activity, action);
 
             if (!IsBound)
             {
@@ -182,12 +190,18 @@ namespace DrunkAudible.Mobile.Android
 
         void UpdateTimerViewsAndStatesFromPlayerService ()
         {
-            if (IsBound && _connection.Binder.Service.IsPlaying)
+            if (IsPlaying)
             {
                 UpdateTimerViewsAndStates (
                     _connection.Binder.Service.Duration,
                     _connection.Binder.Service.CurrentPosition
                 );
+
+                _playOrPauseButton.Text = Activity.ApplicationContext.GetString (Resource.String.ic_fa_pause);
+            }
+            else
+            {
+                _playOrPauseButton.Text = Activity.ApplicationContext.GetString (Resource.String.ic_fa_play);
             }
         }
 

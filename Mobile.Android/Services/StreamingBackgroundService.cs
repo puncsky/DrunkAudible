@@ -37,6 +37,7 @@ namespace DrunkAudible.Mobile.Android
         WifiManager _wifiManager;
         WifiManager.WifiLock _wifiLock;
         bool _paused;
+        Timer _episodeProgressUpdateTimer;
 
         AudioEpisode _currentEpisode;
 
@@ -46,8 +47,8 @@ namespace DrunkAudible.Mobile.Android
         {
             base.OnCreate ();
 
-            var episodeProgressUpdateTimer = new Timer (
-                o => UpdateEpisodeCurrentTime(),
+            _episodeProgressUpdateTimer = new Timer (
+                o => UpdateEpisodeCurrentTimeIfPlaying(),
                 null,
                 0,
                 EPISODE_CURRENT_TIME_UPDATE_INTERVAL
@@ -58,14 +59,16 @@ namespace DrunkAudible.Mobile.Android
             _wifiManager = (WifiManager)GetSystemService (WifiService);
         }
 
-        public static Intent CreateIntent(String action)
+        public static Intent CreateIntent(Context context, String action)
         {
-            return new Intent (action);
+            var intent = new Intent (context, typeof (StreamingBackgroundService));
+            intent.SetAction (action);
+            return intent;
         }
 
-        public static Intent CreateIntent(String action, int albumID, int episodeID)
+        public static Intent CreateIntent(Context context, String action, int albumID, int episodeID)
         {
-            var intent = CreateIntent(action);
+            var intent = CreateIntent(context, action);
             intent.PutExtra (ALBUM_ID_INTENT_EXTRA, albumID);
             intent.PutExtra (EPISODE_ID_INTENT_EXTRA, episodeID);
             return intent;
@@ -113,6 +116,11 @@ namespace DrunkAudible.Mobile.Android
             {
                 _player.Release ();
                 _player = null;
+            }
+
+            if (_episodeProgressUpdateTimer != null)
+            {
+                _episodeProgressUpdateTimer.Dispose ();
             }
         }
 
@@ -425,7 +433,7 @@ namespace DrunkAudible.Mobile.Android
             }
         }
 
-        void UpdateEpisodeCurrentTime ()
+        void UpdateEpisodeCurrentTimeIfPlaying ()
         {
             if (IsPlaying)
             {

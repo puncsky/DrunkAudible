@@ -6,4 +6,6 @@
     <string name="ic_fa_search">&#xf002;</string>
     <string name="ic_fa_user">&#xf007;</string>
     <string name="ic_fa_shopping_cart">&#xf07a;</string>
+    <string name="ic_fa_play">&#xf04b;</string>
+    <string name="ic_fa_pause">&#xf04c;</string>
 </resources>

@@ -5,34 +5,6 @@
     android:layout_height="fill_parent"
     android:background="@color/background"
     android:padding="8dp">
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:id="@+id/linearLayout1">
-        <Button
-            android:text="@string/play"
-            android:id="@+id/playButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableTop="@drawable/ic_av_play"
-            android:layout_gravity="center_vertical" />
-        <Button
-            android:text="@string/pause"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/pauseButton"
-            android:drawableTop="@drawable/ic_av_pause"
-            android:layout_gravity="center_vertical" />
-        <Button
-            android:text="@string/stop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/stopButton"
-            android:drawableTop="@drawable/ic_av_stop"
-            android:layout_gravity="center_vertical" />
-    </LinearLayout>
     <SeekBar
         android:id="@+id/SeekBar"
         android:layout_width="match_parent"
@@ -50,4 +22,18 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/AudioControllerGroup">
+        <Button
+            android:id="@+id/PlayOrPauseButton"
+            android:layout_width="100dip"
+            android:layout_height="100dip"
+            android:text="@string/ic_fa_play"
+            android:textSize="50sp"
+            android:layout_gravity="center_vertical" />
+    </LinearLayout>
 </LinearLayout>
