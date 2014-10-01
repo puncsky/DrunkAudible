@@ -61,7 +61,8 @@ namespace DrunkAudible.Mobile.Android
             base.OnStart ();
 
             SendAudioCommand (StreamingBackgroundService.ACTION_CONNECT);
-            StartUpdatingTimerViewsAndStates ();
+            UpdateTimerViewsAndStates ((int) CurrentEpisode.Duration, (int) CurrentEpisode.CurrentTime);
+            StartUpdateTimerViewsAndStatesFromPlayerService ();
         }
 
         public override void OnStop ()
@@ -73,7 +74,7 @@ namespace DrunkAudible.Mobile.Android
                 Activity.UnbindService (_connection);
                 IsBound = false;
             }
-            StopUpdatingTimerViewsAndStates ();
+            StopUpdateTimerViewsAndStatesFromPlayerService ();
         }
 
         public override void OnDestroyView ()
@@ -128,7 +129,7 @@ namespace DrunkAudible.Mobile.Android
             _spentTime = Activity.FindViewById<TextView> (Resource.Id.SpentTime);
             _leftTime = Activity.FindViewById<TextView> (Resource.Id.LeftTime);
             UpdateTimerViewsAndStates ((int) CurrentEpisode.Duration, (int) CurrentEpisode.CurrentTime);
-            _seekBar.StartTrackingTouch += (sender, e) => StopUpdatingTimerViewsAndStates ();
+            _seekBar.StartTrackingTouch += (sender, e) => StopUpdateTimerViewsAndStatesFromPlayerService ();
             _seekBar.ProgressChanged += (sender, e) =>
             {
                 // The player moves to the position which the user drags to.
@@ -140,7 +141,7 @@ namespace DrunkAudible.Mobile.Android
             _seekBar.StopTrackingTouch += (sender, e) =>
             {
                 _connection.Binder.Service.CurrentPosition = _seekBar.Progress;
-                StartUpdatingTimerViewsAndStates ();
+                StartUpdateTimerViewsAndStatesFromPlayerService ();
             };
 
             var play = Activity.FindViewById<Button> (Resource.Id.playButton);
@@ -169,12 +170,12 @@ namespace DrunkAudible.Mobile.Android
             Activity.StartService (intent);
         }
 
-        void StartUpdatingTimerViewsAndStates ()
+        void StartUpdateTimerViewsAndStatesFromPlayerService ()
         {
             _uIUpdateTimer.Change (0, INTERVAL);
         }
 
-        void StopUpdatingTimerViewsAndStates ()
+        void StopUpdateTimerViewsAndStatesFromPlayerService ()
         {
             _uIUpdateTimer.Change (Timeout.Infinite, Timeout.Infinite);
         }

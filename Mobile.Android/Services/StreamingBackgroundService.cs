@@ -199,18 +199,32 @@ namespace DrunkAudible.Mobile.Android
             get { return _currentEpisode; }
             set
             {
-                var isPlaying = IsPlaying;
                 var isValidChange = value != null && value != _currentEpisode;
-                var isFirstAssignment = _currentEpisode == null;
                 if (isValidChange)
                 {
                     Stop ();
                     _currentEpisode = value;
-                    if (isFirstAssignment || isPlaying)
+                    Play ();
+                }
+            }
+        }
+
+        AudioEpisode NextEpisode
+        {
+            get
+            {
+                var currentIndex = Array.IndexOf (CurrentAlbum.Episodes, CurrentEpisode);
+                var nextIndex = currentIndex + 1;
+                if (nextIndex < CurrentAlbum.Episodes.Length)
+                {
+                    var nextEpisode = CurrentAlbum.Episodes [nextIndex];
+                    if (AudioDownloader.HasLocalFile (nextEpisode.RemoteURL, nextEpisode.FileSize))
                     {
-                        Play ();
+                        return nextEpisode;
                     }
                 }
+
+                return null;
             }
         }
 
@@ -228,7 +242,17 @@ namespace DrunkAudible.Mobile.Android
             _player.Prepared += (sender, args) => _player.Start ();
 
             // When we have reached the end of the song stop ourselves, however you could signal next track here.
-            _player.Completion += (sender, args) => Stop ();
+            _player.Completion += (sender, args) =>
+            {
+                Stop ();
+                CurrentEpisode.CurrentTime = CurrentEpisode.Duration;
+                DatabaseSingleton.Orm.Database.InsertOrReplace (CurrentEpisode);
+                if (NextEpisode != null)
+                {
+                    NextEpisode.CurrentTime = 0;
+                    CurrentEpisode = NextEpisode;
+                }
+            };
 
             _player.Error += (sender, args) => 
             {
@@ -403,7 +427,7 @@ namespace DrunkAudible.Mobile.Android
 
         void UpdateEpisodeCurrentTime ()
         {
-            if (_player != null)
+            if (IsPlaying)
             {
                 CurrentEpisode.CurrentTime = CurrentPosition;
                 DatabaseSingleton.Orm.Database.InsertOrReplace (CurrentEpisode);
