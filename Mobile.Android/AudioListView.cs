@@ -35,7 +35,7 @@ namespace DrunkAudible.Mobile.Android
 
             if (e.ScrollState == ScrollState.Idle)
             {
-                ((AudioListAdapter) Adapter).LoadImagesForOnscreenRows (this);
+                ((IconAndTitleItemListAdapter) Adapter).LoadImagesForOnscreenRows (this);
             }
         }
     }

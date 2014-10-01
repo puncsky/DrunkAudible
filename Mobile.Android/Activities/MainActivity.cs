@@ -1,69 +1,119 @@
 ﻿// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
 using System;
-using System.IO;
 using Android.App;
 using Android.OS;
-using Android.Widget;
-using DrunkAudible.Data;
-using DrunkAudible.Data.Models;
+using Android.Views;
+using Android.Content;
 
 namespace DrunkAudible.Mobile.Android
 {
-    [Activity (Label = "Faves", MainLauncher = true, Icon = "@drawable/ic_launcher", Theme = "@style/Theme")]
-    public class MainActivity : ListActivity
+    [Activity (
+        Label = "@string/ApplicationName",
+        MainLauncher = true,
+        Icon = "@drawable/ic_launcher",
+        Theme = "@style/Theme"
+    )]
+    public class MainActivity : Activity
     {
-        protected override void OnCreate(Bundle savedInstanceState)
+        const String SELECTED_TAB_BUNDLE_KEY = "Tab";
+
+        static TabHolder [] _tabConfiguration =
+        {
+            new TabHolder (TabTitle.Home, Resource.String.ic_fa_home, new AlbumListFragment ()),
+            new TabHolder (TabTitle.Player, Resource.String.ic_fa_play_circle, new AudioPlayerFragment ()),
+            new TabHolder (TabTitle.Store, Resource.String.ic_fa_shopping_cart, new Fragment ()),
+            new TabHolder (TabTitle.Me, Resource.String.ic_fa_user, new Fragment ()),
+        };
+
+        protected override void OnCreate (Bundle savedInstanceState)
         {
             base.OnCreate (savedInstanceState);
 
-            SetContentView (Resource.Layout.AudioListView);
+            SetContentView (Resource.Layout.Main);
 
-            SetAssetDatabase ();
+            ConfigureTabs ();
 
-            ListAdapter = new AlbumListAdapter (this, DatabaseSingleton.Orm.Albums);
-
-            ListView.ItemClick += OnAlbumItemClicked_GoTo_EpisodesListViewActivity;
-        }
-
-        void OnAlbumItemClicked_GoTo_EpisodesListViewActivity(object sender, AdapterView.ItemClickEventArgs e)
-        {
-            var selectedAlbum = DatabaseSingleton.Orm.Albums [e.Position];
-            StartActivity (EpisodesListActivity.CreateIntent (this, selectedAlbum.Id));
-        }
-
-        #region SetDatabase
-
-        // TODO move to splash screen activity
-        void SetAssetDatabase()
-        {
-            var docFolder = System.Environment.GetFolderPath (System.Environment.SpecialFolder.Personal);
-            var dbFile = Path.Combine (docFolder, ObjectRelationalMapping.DATABASE_FILE_NAME);
-            if (!File.Exists (dbFile))
+            // Restore the selected tab. e.g. rotation.
+            if (savedInstanceState != null)
             {
-                var s = Assets.Open(ObjectRelationalMapping.DATABASE_FILE_NAME);  // DATA FILE RESOURCE ID
-                var writeStream = new FileStream (dbFile, FileMode.OpenOrCreate, FileAccess.Write);
-                ReadWriteStream (s, writeStream);
+                ActionBar.SelectTab (ActionBar.GetTabAt (savedInstanceState.GetInt (SELECTED_TAB_BUNDLE_KEY)));
             }
         }
 
-        static void ReadWriteStream(Stream readStream, Stream writeStream)
+        public ActionBar.Tab GetTab (TabTitle title)
         {
-            const int length = 256;
-            var buffer = new Byte[length];
-            var bytesRead = readStream.Read(buffer, 0, length);
-
-            // write the required bytes
-            while (bytesRead > 0)
-            {
-                writeStream.Write(buffer, 0, bytesRead);
-                bytesRead = readStream.Read(buffer, 0, length);
-            }
-            readStream.Close();
-            writeStream.Close();
+            return ActionBar.GetTabAt ((int) title);
         }
 
-        #endregion
+        public enum TabTitle { Home, Player, Store, Me };
+
+        protected override void OnSaveInstanceState (Bundle outState)
+        {
+            base.OnSaveInstanceState (outState);
+
+            outState.PutInt (SELECTED_TAB_BUNDLE_KEY, ActionBar.SelectedNavigationIndex);
+        }
+
+        void ConfigureTabs ()
+        {
+            ActionBar.NavigationMode = ActionBarNavigationMode.Tabs;
+            ActionBar.SetDisplayShowTitleEnabled (false);
+            ActionBar.SetDisplayShowHomeEnabled (false);
+
+            foreach (var tabHolder in _tabConfiguration)
+            {
+                AddTab (tabHolder);
+            }
+
+            if (ActionBar.SelectedTab != GetTab(TabTitle.Player))
+            {
+                selectPlayerTabOnEpisodeIdIntentExtra (Intent);
+            }
+        }
+
+        void AddTab (TabHolder tabHolder)
+        {
+            var tab = ActionBar.NewTab ();
+            tab.SetCustomView (IconProvider.CreateView (this, tabHolder.IconResource));
+
+            tab.TabSelected += (sender, e) =>
+            {
+                var currentFragment = FragmentManager.FindFragmentById (Resource.Id.FragmentContainer);
+                if (currentFragment != null)
+                {
+                    e.FragmentTransaction.Remove (currentFragment);
+                }
+
+                e.FragmentTransaction.Add (Resource.Id.FragmentContainer, tabHolder.Fragment);
+            };
+            tab.TabUnselected += (sender, e) => e.FragmentTransaction.Remove (tabHolder.Fragment);
+
+            ActionBar.AddTab (tab);
+        }
+
+        void selectPlayerTabOnEpisodeIdIntentExtra (Intent intent)
+        {
+            if (intent.HasExtra (AudioPlayerFragment.EPISODE_ID_INTENT_EXTRA) && 
+                intent.HasExtra (AudioPlayerFragment.ALBUM_ID_INTENT_EXTRA))
+            {
+                GetTab(TabTitle.Player).Select ();
+            }
+        }
+
+        class TabHolder
+        {
+            public TabHolder (TabTitle title, int iconResource, Fragment fragment)
+            {
+                Title = title;
+                IconResource = iconResource;
+                Fragment = fragment;
+            }
+
+            public TabTitle Title { get; set; }
+            public int IconResource { get; set; }
+            public Fragment Fragment { get; set; }
+        }
     }
 }
 

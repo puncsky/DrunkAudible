@@ -8,11 +8,11 @@ using Android.Content;
 using Android.OS;
 using Android.Widget;
 using DrunkAudible.Data.Models;
+using Android.Views;
 
 namespace DrunkAudible.Mobile.Android
 {
-    [Activity (Label = "AudioPlayerActivity")]
-    public class AudioPlayerActivity : Activity
+    public class AudioPlayerFragment : Fragment
     {
         StreamingBackgroundServiceConnection _connection;
 
@@ -20,17 +20,28 @@ namespace DrunkAudible.Mobile.Android
 
         const String TIME_FORMAT = "{0:mm\\:ss}";
 
-        const String ALBUM_ID_INTENT_EXTRA = "AlbumID";
-        const String EPISODE_ID_INTENT_EXTRA = "EpisodeID";
+        public const String ALBUM_ID_INTENT_EXTRA = "AlbumID";
+        public const String EPISODE_ID_INTENT_EXTRA = "EpisodeID";
+
+        Album _currentAlbum = new Album ();
+        AudioEpisode _currentEpisode = new AudioEpisode ();
 
         SeekBar _seekBar;
         TextView _spentTime;
         TextView _leftTime;
         Timer _uIUpdateTimer;
 
-        protected override void OnCreate (Bundle savedInstanceState)
+        public override View OnCreateView (LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState)
         {
-            base.OnCreate (savedInstanceState);
+            base.OnCreateView (inflater, container, savedInstanceState);
+
+            return inflater.Inflate (Resource.Layout.AudioPlayer, container, false);
+        }
+
+        public override void OnActivityCreated (Bundle savedInstanceState)
+        {
+            base.OnActivityCreated (savedInstanceState);
 
             Initialize ();
 
@@ -39,13 +50,13 @@ namespace DrunkAudible.Mobile.Android
 
         public static Intent CreateIntent(Context context, int albumID, int currentEpisodeID)
         {
-            var intent = new Intent (context, typeof (AudioPlayerActivity));
+            var intent = new Intent (context, typeof (MainActivity));
             intent.PutExtra (ALBUM_ID_INTENT_EXTRA, albumID);
             intent.PutExtra (EPISODE_ID_INTENT_EXTRA, currentEpisodeID);
             return intent;
         }
 
-        protected override void OnStart ()
+        public override void OnStart ()
         {
             base.OnStart ();
 
@@ -53,31 +64,40 @@ namespace DrunkAudible.Mobile.Android
             StartUpdatingTimerViewsAndStates ();
         }
 
-        protected override void OnStop ()
+        public override void OnStop ()
         {
             base.OnStop ();
 
             if (IsBound)
             {
-                UnbindService (_connection);
+                Activity.UnbindService (_connection);
                 IsBound = false;
             }
             StopUpdatingTimerViewsAndStates ();
         }
 
+        public override void OnDestroyView ()
+        {
+            base.OnDestroyView ();
+
+            _uIUpdateTimer.Dispose ();
+        }
+
         public bool IsBound { get; set; }
 
-        public Album CurrentAlbum { get; set; }
+        public Album CurrentAlbum { get { return _currentAlbum; } set { _currentAlbum = value; } }
 
-        public AudioEpisode CurrentEpisode { get; set; }
+        public AudioEpisode CurrentEpisode { get { return _currentEpisode; } set { _currentEpisode = value; } }
 
         void Initialize ()
         {
+            _connection = new StreamingBackgroundServiceConnection (this);
+
             InitializeExtrasFromIntent ();
             InitializeViews ();
 
             _uIUpdateTimer = new Timer (
-                o => RunOnUiThread (UpdateTimerViewsAndStatesFromPlayerService), // Must RunOnUiThread to update.
+                o => Activity.RunOnUiThread (UpdateTimerViewsAndStatesFromPlayerService), // Must RunOnUiThread to update.
                 null,
                 Timeout.Infinite,
                 Timeout.Infinite
@@ -86,28 +106,27 @@ namespace DrunkAudible.Mobile.Android
 
         void InitializeExtrasFromIntent ()
         {
-            if (Intent.HasExtra (ALBUM_ID_INTENT_EXTRA))
+            if (Activity.Intent.HasExtra (ALBUM_ID_INTENT_EXTRA))
             {
                 CurrentAlbum = DatabaseSingleton
                     .Orm
                     .Albums
-                    .FirstOrDefault (a => a.Id == Intent.GetIntExtra (ALBUM_ID_INTENT_EXTRA, -1));
+                    .FirstOrDefault (a => a.Id == Activity.Intent.GetIntExtra (ALBUM_ID_INTENT_EXTRA, -1));
             }
-            if (Intent.HasExtra (EPISODE_ID_INTENT_EXTRA))
+
+            if (Activity.Intent.HasExtra (EPISODE_ID_INTENT_EXTRA))
             {
                 CurrentEpisode = CurrentAlbum
                     .Episodes
-                    .FirstOrDefault (e => e.Id == Intent.GetIntExtra (EPISODE_ID_INTENT_EXTRA, -1));
+                    .FirstOrDefault (e => e.Id == Activity.Intent.GetIntExtra (EPISODE_ID_INTENT_EXTRA, -1));
             }
         }
 
         void InitializeViews ()
         {
-            SetContentView (Resource.Layout.AudioPlayer);
-
-            _seekBar = FindViewById<SeekBar> (Resource.Id.SeekBar);
-            _spentTime = FindViewById<TextView> (Resource.Id.SpentTime);
-            _leftTime = FindViewById<TextView> (Resource.Id.LeftTime);
+            _seekBar = Activity.FindViewById<SeekBar> (Resource.Id.SeekBar);
+            _spentTime = Activity.FindViewById<TextView> (Resource.Id.SpentTime);
+            _leftTime = Activity.FindViewById<TextView> (Resource.Id.LeftTime);
             UpdateTimerViewsAndStates ((int) CurrentEpisode.Duration, (int) CurrentEpisode.CurrentTime);
             _seekBar.StartTrackingTouch += (sender, e) => StopUpdatingTimerViewsAndStates ();
             _seekBar.ProgressChanged += (sender, e) =>
@@ -124,15 +143,13 @@ namespace DrunkAudible.Mobile.Android
                 StartUpdatingTimerViewsAndStates ();
             };
 
-            _connection = new StreamingBackgroundServiceConnection (this);
-
-            var play = FindViewById<Button> (Resource.Id.playButton);
+            var play = Activity.FindViewById<Button> (Resource.Id.playButton);
             play.Click += (sender, args) => SendAudioCommand (StreamingBackgroundService.ACTION_PLAY);
 
-            var pause = FindViewById<Button> (Resource.Id.pauseButton);
+            var pause = Activity.FindViewById<Button> (Resource.Id.pauseButton);
             pause.Click += (sender, args) => SendAudioCommand (StreamingBackgroundService.ACTION_PAUSE);
 
-            var stop = FindViewById<Button> (Resource.Id.stopButton);
+            var stop = Activity.FindViewById<Button> (Resource.Id.stopButton);
             stop.Click += (sender, args) =>
             {
                 UpdateTimerViewsAndStates (_seekBar.Max, 0);
@@ -146,10 +163,10 @@ namespace DrunkAudible.Mobile.Android
 
             if (!IsBound)
             {
-                BindService (intent, _connection, Bind.AutoCreate);
+                Activity.BindService (intent, _connection, Bind.AutoCreate);
             }
 
-            StartService (intent);
+            Activity.StartService (intent);
         }
 
         void StartUpdatingTimerViewsAndStates ()

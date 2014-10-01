@@ -11,17 +11,17 @@ namespace DrunkAudible.Mobile.Android
     /// </summary>
     public class StreamingBackgroundServiceConnection : Java.Lang.Object, IServiceConnection
     {
-        AudioPlayerActivity _activity;
+        AudioPlayerFragment _fragment;
         StreamingBackgroundServiceBinder _binder;
 
-        public StreamingBackgroundServiceConnection (AudioPlayerActivity activity)
+        public StreamingBackgroundServiceConnection (AudioPlayerFragment fragment)
         {
-            if (activity == null)
+            if (fragment == null)
             {
-                throw new ArgumentNullException ("activity");
+                throw new ArgumentNullException ("fragment");
             }
 
-            _activity = activity;
+            _fragment = fragment;
         }
 
         public void OnServiceConnected (ComponentName name, IBinder service)
@@ -30,34 +30,34 @@ namespace DrunkAudible.Mobile.Android
 
             if (_binder == null)
             {
-                _activity.IsBound = false;
+                _fragment.IsBound = false;
                 return;
             }
 
-            _activity.IsBound = true;
+            _fragment.IsBound = true;
 
-            if (_activity.CurrentAlbum != null)
+            if (_fragment.CurrentAlbum != null)
             {
-                _binder.Service.CurrentAlbum = _activity.CurrentAlbum;
+                _binder.Service.CurrentAlbum = _fragment.CurrentAlbum;
             }
             else
             {
-                _activity.CurrentAlbum = _binder.Service.CurrentAlbum;
+                _fragment.CurrentAlbum = _binder.Service.CurrentAlbum;
             }
 
-            if (_activity.CurrentEpisode != null)
+            if (_fragment.CurrentEpisode != null)
             {
-                _binder.Service.CurrentEpisode = _activity.CurrentEpisode;
+                _binder.Service.CurrentEpisode = _fragment.CurrentEpisode;
             }
             else
             {
-                _activity.CurrentEpisode = _binder.Service.CurrentEpisode;
+                _fragment.CurrentEpisode = _binder.Service.CurrentEpisode;
             }
         }
 
         public void OnServiceDisconnected (ComponentName name)
         {
-            _activity.IsBound = false;
+            _fragment.IsBound = false;
         }
 
         public StreamingBackgroundServiceBinder Binder { get { return _binder; } }

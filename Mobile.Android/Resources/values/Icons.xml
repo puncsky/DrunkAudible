@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ic_fa_play_circle_o">&#xf10c;</string>
+    <string name="ic_fa_play_circle">&#xf144;</string>
+    <string name="ic_fa_home">&#xf015;</string>
+    <string name="ic_fa_search">&#xf002;</string>
+    <string name="ic_fa_user">&#xf007;</string>
+    <string name="ic_fa_shopping_cart">&#xf07a;</string>
+</resources>

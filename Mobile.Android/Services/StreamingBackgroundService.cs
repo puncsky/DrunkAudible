@@ -78,6 +78,10 @@ namespace DrunkAudible.Mobile.Android
 
         public override StartCommandResult OnStartCommand (Intent intent, StartCommandFlags flags, int startId)
         {
+            if (intent == null)
+            {
+                throw new ArgumentNullException ("intent");
+            }
 
             InitializeExtrasFromIntent (intent);
 
@@ -295,7 +299,7 @@ namespace DrunkAudible.Mobile.Android
             var pendingIntent = PendingIntent.GetActivity (
                 ApplicationContext,
                 0,
-                new Intent (ApplicationContext, typeof(AudioPlayerActivity)),
+                new Intent (ApplicationContext, typeof(AudioPlayerFragment)),
                 PendingIntentFlags.UpdateCurrent
             );
 

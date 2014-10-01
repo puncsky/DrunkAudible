@@ -10,12 +10,12 @@ using DrunkAudible.Data.Models;
 
 namespace DrunkAudible.Mobile.Android
 {
-    [Activity (Label = "EpisodesListViewActivity")]
-    public class EpisodesListActivity : ListActivity
+    [Activity (Label = "AudioListActivity")]
+    public class AudioListActivity : ListActivity
     {
         Album _album;
 
-        const String DEBUG_TAG = "EpisodesListActivity";
+        const String DEBUG_TAG = "AudioListActivity";
         const String ALBUM_ID_INTENT_EXTRA = "AlbumID";
 
         protected override void OnCreate (Bundle savedInstanceState)
@@ -30,7 +30,7 @@ namespace DrunkAudible.Mobile.Android
 
         public static Intent CreateIntent (Context context, int albumID)
         {
-            var intent = new Intent (context, typeof(EpisodesListActivity));
+            var intent = new Intent (context, typeof(AudioListActivity));
             intent.PutExtra (ALBUM_ID_INTENT_EXTRA, albumID);
             return intent;
         }
@@ -55,7 +55,11 @@ namespace DrunkAudible.Mobile.Android
 
             if (AudioDownloader.HasLocalFile (selectedEpisode.RemoteURL, selectedEpisode.FileSize))
             {
-                StartActivity (AudioPlayerActivity.CreateIntent (this, _album.Id, selectedEpisode.Id));
+                var resultIntent = new Intent ();
+                resultIntent.PutExtra (AudioPlayerFragment.EPISODE_ID_INTENT_EXTRA, selectedEpisode.Id);
+                resultIntent.PutExtra (AudioPlayerFragment.ALBUM_ID_INTENT_EXTRA, _album.Id);
+                SetResult (Result.Ok, resultIntent);
+                Finish ();
             }
             else
             {
