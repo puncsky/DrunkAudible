@@ -154,6 +154,15 @@ namespace DrunkAudible.Mobile.Tests
                 );
             }
         }
+
+        [Test]
+        public void JustTest ()
+        {
+            var a = Album.Empty;
+            var b = Album.Empty;
+
+            Assert.AreSame (a, b);
+        }
     }
 }
 

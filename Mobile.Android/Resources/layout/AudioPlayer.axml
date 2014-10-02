@@ -5,6 +5,13 @@
     android:layout_height="fill_parent"
     android:background="@color/background"
     android:padding="8dp">
+    <TextView
+        android:id="@+id/PlayerTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="AudioEpisode Title"
+        android:textSize="20sp"
+        android:gravity="center" />
     <SeekBar
         android:id="@+id/SeekBar"
         android:layout_width="match_parent"

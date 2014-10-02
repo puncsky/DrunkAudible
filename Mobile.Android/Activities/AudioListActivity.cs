@@ -1,7 +1,6 @@
 ﻿// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
 using System;
-using System.Linq;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -14,34 +13,37 @@ namespace DrunkAudible.Mobile.Android
     public class AudioListActivity : ListActivity
     {
         Album _album;
+        AudioEpisode _currentEpisode;
 
         const String DEBUG_TAG = "AudioListActivity";
-        const String ALBUM_ID_INTENT_EXTRA = "AlbumID";
 
         protected override void OnCreate (Bundle savedInstanceState)
         {
             base.OnCreate (savedInstanceState);
 
             SetContentView (Resource.Layout.AudioListView);
-            InitializeExtrasFromIntent ();
-            ListAdapter = new AudioListAdapter (this, _album);
+            _album = ExtraUtils.GetAlbum (Intent);
+            Title = _album.Title;
+            _currentEpisode = ExtraUtils.GetAudioEpisode (Intent, _album);
+            ListAdapter = new AudioListAdapter (this, _album, _currentEpisode);
             ListView.ItemClick += OnAlbumItemClicked;
+
+            if (_currentEpisode != null)
+            {
+                var position = Array.IndexOf (_album.Episodes, _currentEpisode);
+                ListView.SetSelection (position);
+            }
         }
 
-        public static Intent CreateIntent (Context context, int albumID)
+        public static Intent CreateIntent (Context context, int albumID, int episodeId = -1)
         {
             var intent = new Intent (context, typeof(AudioListActivity));
-            intent.PutExtra (ALBUM_ID_INTENT_EXTRA, albumID);
-            return intent;
-        }
-
-        void InitializeExtrasFromIntent ()
-        {
-            if (Intent.HasExtra (ALBUM_ID_INTENT_EXTRA))
+            ExtraUtils.PutAlbum (intent, albumID);
+            if (episodeId != -1)
             {
-                var albumID = Intent.GetIntExtra (ALBUM_ID_INTENT_EXTRA, -1);
-                _album = DatabaseSingleton.Orm.Albums.FirstOrDefault (a => a.Id == albumID);
+                ExtraUtils.PutEpisode (intent, episodeId);
             }
+            return intent;
         }
 
         async void OnAlbumItemClicked (object sender, AdapterView.ItemClickEventArgs e)
@@ -56,8 +58,9 @@ namespace DrunkAudible.Mobile.Android
             if (AudioDownloader.HasLocalFile (selectedEpisode.RemoteURL, selectedEpisode.FileSize))
             {
                 var resultIntent = new Intent ();
-                resultIntent.PutExtra (AudioPlayerFragment.EPISODE_ID_INTENT_EXTRA, selectedEpisode.Id);
-                resultIntent.PutExtra (AudioPlayerFragment.ALBUM_ID_INTENT_EXTRA, _album.Id);
+                ExtraUtils.PutEpisode (resultIntent, selectedEpisode.Id);
+                ExtraUtils.PutAlbum (resultIntent, _album.Id);
+                ExtraUtils.PutSelectedTab (resultIntent, (int) MainActivity.TabTitle.Player);
                 SetResult (Result.Ok, resultIntent);
                 Finish ();
             }

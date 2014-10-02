@@ -7,6 +7,8 @@ namespace DrunkAudible.Data.Models
 {
     public class AudioEpisode : IManMadeItem, IIconAndTitleItem
     {
+        static readonly AudioEpisode _empty = new AudioEpisode ();
+
         [Ignore]
         public Author[] Authors { get; set; }
 
@@ -37,6 +39,9 @@ namespace DrunkAudible.Data.Models
         public String RemoteURL { get; set; }
 
         public int FileSize { get; set; }
+
+        [Ignore]
+        public static AudioEpisode Empty { get { return _empty; } }
     }
 }
 

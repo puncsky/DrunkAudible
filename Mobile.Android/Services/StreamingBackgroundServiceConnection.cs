@@ -36,6 +36,11 @@ namespace DrunkAudible.Mobile.Android
 
             _fragment.IsBound = true;
 
+            if (_fragment.CurrentAlbum == _binder.Service.CurrentAlbum)
+            {
+                return;
+            }
+
             if (_fragment.CurrentAlbum != null)
             {
                 _binder.Service.CurrentAlbum = _fragment.CurrentAlbum;

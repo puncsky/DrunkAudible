@@ -63,6 +63,7 @@
     <Compile Include="Activities\AlbumListFragment.cs" />
     <Compile Include="Activities\AudioPlayerFragment.cs" />
     <Compile Include="IconProvider.cs" />
+    <Compile Include="Activities\ExtraUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

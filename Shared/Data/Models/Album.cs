@@ -8,6 +8,8 @@ namespace DrunkAudible.Data.Models
 {
     public class Album : IManMadeItem, IIconAndTitleItem
     {
+        static readonly Album _empty = new Album ();
+
         [Ignore]
         public Author[] Authors { get; set; }
 
@@ -27,6 +29,9 @@ namespace DrunkAudible.Data.Models
 
         [Ignore]
         public AudioEpisode[] Episodes { get; set; }
+
+        [Ignore]
+        public static Album Empty { get { return _empty; } }
     }
 }
 

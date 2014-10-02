@@ -15,13 +15,18 @@ namespace DrunkAudible.Mobile.Android
     {
         const int SELECT_AUDIO_ACTIVITY_RESULT = 1;
 
+        Album _currentAlbum;
+        AudioEpisode _currentEpisode;
+
         public override View OnCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             base.OnCreateView (inflater, container, savedInstanceState);
 
             SetAssetDatabase ();
 
-            ListAdapter = new AlbumListAdapter (Activity, DatabaseSingleton.Orm.Albums);
+            _currentAlbum = ExtraUtils.GetAlbum (Activity.Intent);
+            _currentEpisode = ExtraUtils.GetAudioEpisode (Activity.Intent, _currentAlbum);
+            ListAdapter = new AlbumListAdapter (Activity, DatabaseSingleton.Orm.Albums, _currentAlbum);
 
             return inflater.Inflate(Resource.Layout.AudioListView, container, false);
         }
@@ -34,10 +39,18 @@ namespace DrunkAudible.Mobile.Android
             {
                 var selectedAlbum = DatabaseSingleton.Orm.Albums [e.Position];
                 StartActivityForResult (
-                    AudioListActivity.CreateIntent (Activity, selectedAlbum.Id),
+                    AudioListActivity.CreateIntent (
+                        Activity,
+                        selectedAlbum.Id, _currentEpisode != null ? _currentEpisode.Id : -1
+                    ),
                     SELECT_AUDIO_ACTIVITY_RESULT
                 );
             };
+
+            if (_currentAlbum != null)
+            {
+                ListView.SetSelection (Array.IndexOf(DatabaseSingleton.Orm.Albums, _currentAlbum));
+            }
         }
 
         public override void OnActivityResult(int requestCode, Result resultCode, Intent data)

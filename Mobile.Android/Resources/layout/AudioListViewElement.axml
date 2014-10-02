@@ -69,4 +69,14 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/DownloadProgress" />
+    <TextView
+        android:id="@+id/IsPlayingIndicator"
+        android:layout_width="24sp"
+        android:layout_height="fill_parent"
+        android:layout_alignParentRight="true"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="6dip"
+        android:text="@string/ic_fa_play_circle_o"
+        android:textSize="20sp"
+        android:visibility="gone" />
 </RelativeLayout>

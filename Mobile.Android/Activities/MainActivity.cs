@@ -3,7 +3,6 @@
 using System;
 using Android.App;
 using Android.OS;
-using Android.Views;
 using Android.Content;
 
 namespace DrunkAudible.Mobile.Android
@@ -66,9 +65,11 @@ namespace DrunkAudible.Mobile.Android
                 AddTab (tabHolder);
             }
 
-            if (ActionBar.SelectedTab != GetTab(TabTitle.Player))
+            var selectedTabIndex = ExtraUtils.GetSelectedTab (Intent);
+            if (selectedTabIndex != -1 && ActionBar.SelectedTab != GetTab (TabTitle.Player))
             {
-                selectPlayerTabOnEpisodeIdIntentExtra (Intent);
+                Intent.RemoveExtra (ExtraUtils.SELECTED_TAB);
+                ActionBar.GetTabAt (selectedTabIndex).Select ();
             }
         }
 
@@ -90,15 +91,6 @@ namespace DrunkAudible.Mobile.Android
             tab.TabUnselected += (sender, e) => e.FragmentTransaction.Remove (tabHolder.Fragment);
 
             ActionBar.AddTab (tab);
-        }
-
-        void selectPlayerTabOnEpisodeIdIntentExtra (Intent intent)
-        {
-            if (intent.HasExtra (AudioPlayerFragment.EPISODE_ID_INTENT_EXTRA) && 
-                intent.HasExtra (AudioPlayerFragment.ALBUM_ID_INTENT_EXTRA))
-            {
-                GetTab(TabTitle.Player).Select ();
-            }
         }
 
         class TabHolder

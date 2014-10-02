@@ -14,13 +14,12 @@ namespace DrunkAudible.Mobile.Android
     public class IconAndTitleItemListAdapter : BaseAdapter
     {
         readonly IIconAndTitleItem [] _items;
-        readonly Context _context;
         readonly ImageDownloader _imageDownloader = new AndroidImageDownloader ();
 
         public IconAndTitleItemListAdapter (Context context, IIconAndTitleItem [] items)
         {
             _items = items;
-            _context = context;
+            Context = context;
         }
 
         public override int Count
@@ -45,7 +44,7 @@ namespace DrunkAudible.Mobile.Android
         {
             var item = _items [position];
 
-            var inflater = (LayoutInflater) _context.GetSystemService (Context.LayoutInflaterService);
+            var inflater = (LayoutInflater) Context.GetSystemService (Context.LayoutInflaterService);
             var rowView = inflater.Inflate (Resource.Layout.AudioListViewElement, parent, false);
 
             var title = rowView.FindViewById<TextView> (Resource.Id.Title);
@@ -60,7 +59,7 @@ namespace DrunkAudible.Mobile.Android
             else
             {
                 // Set the default icon. Otherwise, it may be the cached icon from the view holder.
-                icon.SetImageBitmap (BitmapFactory.DecodeResource (_context.Resources, Resource.Drawable.ic_launcher));
+                icon.SetImageBitmap (BitmapFactory.DecodeResource (Context.Resources, Resource.Drawable.ic_launcher));
 
                 var listView = (AudioListView) parent;
                 if (listView.ScrollState == ScrollState.Idle && !String.IsNullOrEmpty (item.IconUrl))
@@ -71,6 +70,8 @@ namespace DrunkAudible.Mobile.Android
 
             return rowView;
         }
+
+        public Context Context { get; private set; }
 
         #region Image Support
 

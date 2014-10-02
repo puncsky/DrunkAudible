@@ -26,11 +26,10 @@ namespace DrunkAudible.Mobile.Android
 
         const String DEBUG_TAG = "StreamingBackgroundService";
 
+        const double COMPARISON_EPSILON = 0.001;
+
         const int MILLISECONDS_PER_SECOND = 1000;
         const int EPISODE_CURRENT_TIME_UPDATE_INTERVAL = 10000; // in Milliseconds
-
-        const String ALBUM_ID_INTENT_EXTRA = "AlbumID";
-        const String EPISODE_ID_INTENT_EXTRA = "EpisodeID";
 
         MediaPlayer _player;
         AudioManager _audioManager;
@@ -69,8 +68,8 @@ namespace DrunkAudible.Mobile.Android
         public static Intent CreateIntent(Context context, String action, int albumID, int episodeID)
         {
             var intent = CreateIntent(context, action);
-            intent.PutExtra (ALBUM_ID_INTENT_EXTRA, albumID);
-            intent.PutExtra (EPISODE_ID_INTENT_EXTRA, episodeID);
+            ExtraUtils.PutAlbum (intent, albumID);
+            ExtraUtils.PutEpisode(intent, episodeID);
             return intent;
         }
 
@@ -86,7 +85,8 @@ namespace DrunkAudible.Mobile.Android
                 throw new ArgumentNullException ("intent");
             }
 
-            InitializeExtrasFromIntent (intent);
+            CurrentAlbum = ExtraUtils.GetAlbum (intent) ?? CurrentAlbum;
+            CurrentEpisode = ExtraUtils.GetAudioEpisode (intent, CurrentAlbum) ?? CurrentEpisode;
 
             switch (intent.Action)
             {
@@ -293,7 +293,9 @@ namespace DrunkAudible.Mobile.Android
 
             try
             {
-                if (CurrentEpisode == null || !AudioDownloader.HasLocalFile (CurrentEpisode.RemoteURL))
+                if (CurrentEpisode == null ||
+                    Math.Abs (CurrentEpisode.Duration - CurrentEpisode.CurrentTime) < COMPARISON_EPSILON ||
+                    !AudioDownloader.HasLocalFile (CurrentEpisode.RemoteURL, CurrentEpisode.FileSize))
                 {
                     return;
                 }
@@ -414,23 +416,6 @@ namespace DrunkAudible.Mobile.Android
 
             _wifiLock.Release ();
             _wifiLock = null;
-        }
-
-        void InitializeExtrasFromIntent (Intent intent)
-        {
-            if (intent.HasExtra (ALBUM_ID_INTENT_EXTRA))
-            {
-                CurrentAlbum = DatabaseSingleton
-                    .Orm
-                    .Albums
-                    .FirstOrDefault (a => a.Id == intent.GetIntExtra (ALBUM_ID_INTENT_EXTRA, -1));
-            }
-            if (intent.HasExtra (EPISODE_ID_INTENT_EXTRA))
-            {
-                CurrentEpisode = CurrentAlbum
-                    .Episodes
-                    .FirstOrDefault (e => e.Id == intent.GetIntExtra (EPISODE_ID_INTENT_EXTRA, -1));
-            }
         }
 
         void UpdateEpisodeCurrentTimeIfPlaying ()

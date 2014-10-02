@@ -20,17 +20,18 @@ namespace DrunkAudible.Mobile.Android
 
         const String TIME_FORMAT = "{0:mm\\:ss}";
 
-        public const String ALBUM_ID_INTENT_EXTRA = "AlbumID";
-        public const String EPISODE_ID_INTENT_EXTRA = "EpisodeID";
+        Album _currentAlbum = Album.Empty;
+        AudioEpisode _currentEpisode = AudioEpisode.Empty;
 
-        Album _currentAlbum = new Album ();
-        AudioEpisode _currentEpisode = new AudioEpisode ();
-
+        TextView _title;
         SeekBar _seekBar;
         TextView _spentTime;
         TextView _leftTime;
         Timer _uIUpdateTimer;
+
         Button _playOrPauseButton;
+        String _playIconString;
+        String _pauseIconString;
 
         public override View OnCreateView (LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState)
@@ -50,8 +51,8 @@ namespace DrunkAudible.Mobile.Android
         public static Intent CreateIntent(Context context, int albumID, int currentEpisodeID)
         {
             var intent = new Intent (context, typeof (MainActivity));
-            intent.PutExtra (ALBUM_ID_INTENT_EXTRA, albumID);
-            intent.PutExtra (EPISODE_ID_INTENT_EXTRA, currentEpisodeID);
+            ExtraUtils.PutAlbum (intent, albumID);
+            ExtraUtils.PutEpisode(intent, currentEpisodeID);
             return intent;
         }
 
@@ -93,13 +94,41 @@ namespace DrunkAudible.Mobile.Android
             }
         }
 
-        public Album CurrentAlbum { get { return _currentAlbum; } set { _currentAlbum = value; } }
+        public Album CurrentAlbum
+        {
+            get { return _currentAlbum; }
+            set
+            {
+                _currentAlbum = value;
+                if (_currentAlbum == null)
+                {
+                    _currentAlbum = Album.Empty;
+                }
+            }
+        }
 
-        public AudioEpisode CurrentEpisode { get { return _currentEpisode; } set { _currentEpisode = value; } }
+        public AudioEpisode CurrentEpisode
+        {
+            get { return _currentEpisode; }
+            set
+            {
+                _currentEpisode = value;
+                if (_currentEpisode == null)
+                {
+                    _currentEpisode = AudioEpisode.Empty;
+                }
+                if (_title != null)
+                {
+                    _title.Text = _currentEpisode.Title;
+                }
+            }
+        }
 
         void Initialize ()
         {
             _connection = new StreamingBackgroundServiceConnection (this);
+            _pauseIconString = Activity.ApplicationContext.GetString (Resource.String.ic_fa_pause);
+            _playIconString = Activity.ApplicationContext.GetString (Resource.String.ic_fa_play);
 
             InitializeExtrasFromIntent ();
             InitializeViews ();
@@ -114,20 +143,8 @@ namespace DrunkAudible.Mobile.Android
 
         void InitializeExtrasFromIntent ()
         {
-            if (Activity.Intent.HasExtra (ALBUM_ID_INTENT_EXTRA))
-            {
-                CurrentAlbum = DatabaseSingleton
-                    .Orm
-                    .Albums
-                    .FirstOrDefault (a => a.Id == Activity.Intent.GetIntExtra (ALBUM_ID_INTENT_EXTRA, -1));
-            }
-
-            if (Activity.Intent.HasExtra (EPISODE_ID_INTENT_EXTRA))
-            {
-                CurrentEpisode = CurrentAlbum
-                    .Episodes
-                    .FirstOrDefault (e => e.Id == Activity.Intent.GetIntExtra (EPISODE_ID_INTENT_EXTRA, -1));
-            }
+            CurrentAlbum = ExtraUtils.GetAlbum (Activity.Intent);
+            CurrentEpisode = ExtraUtils.GetAudioEpisode (Activity.Intent, CurrentAlbum);
         }
 
         void InitializeViews ()
@@ -164,11 +181,19 @@ namespace DrunkAudible.Mobile.Android
                     SendAudioCommand (StreamingBackgroundService.ACTION_PAUSE);
                 }
             };
+
+            _title = Activity.FindViewById<TextView> (Resource.Id.PlayerTitle);
+            _title.Text = CurrentEpisode.Title;
         }
 
         void SendAudioCommand (string action)
         {
             var intent = StreamingBackgroundService.CreateIntent (Activity, action);
+            if (StreamingBackgroundService.ACTION_PLAY)
+            {
+                ExtraUtils.PutAlbum (intent, CurrentAlbum.Id);
+                ExtraUtils.PutEpisode (intent, CurrentEpisode.Id);
+            }
 
             if (!IsBound)
             {
@@ -197,11 +222,11 @@ namespace DrunkAudible.Mobile.Android
                     _connection.Binder.Service.CurrentPosition
                 );
 
-                _playOrPauseButton.Text = Activity.ApplicationContext.GetString (Resource.String.ic_fa_pause);
+                _playOrPauseButton.Text = _pauseIconString;
             }
             else
             {
-                _playOrPauseButton.Text = Activity.ApplicationContext.GetString (Resource.String.ic_fa_play);
+                _playOrPauseButton.Text = _playIconString;
             }
         }
 
