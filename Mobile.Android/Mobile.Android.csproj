@@ -53,17 +53,17 @@
     <Compile Include="Activities\AudioListAdapter.cs" />
     <Compile Include="Activities\MainActivity.cs" />
     <Compile Include="Services\MusicBroadcastReceiver.cs" />
-    <Compile Include="Services\StreamingBackgroundService.cs" />
-    <Compile Include="Services\StreamingBackgroundServiceBinder.cs" />
-    <Compile Include="Services\StreamingBackgroundServiceConnection.cs" />
     <Compile Include="Activities\IconAndTitleItemListAdapter.cs" />
     <Compile Include="Activities\AlbumListAdapter.cs" />
     <Compile Include="Activities\ViewExtensions.cs" />
     <Compile Include="Activities\AudioListActivity.cs" />
     <Compile Include="Activities\AlbumListFragment.cs" />
-    <Compile Include="Activities\AudioPlayerFragment.cs" />
     <Compile Include="IconProvider.cs" />
     <Compile Include="Activities\ExtraUtils.cs" />
+    <Compile Include="Services\PlayerService.cs" />
+    <Compile Include="Services\PlayerServiceBinder.cs" />
+    <Compile Include="Services\PlayerServiceConnection.cs" />
+    <Compile Include="Activities\PlayerPresenterFragment.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

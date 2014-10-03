@@ -1,7 +1,6 @@
 ﻿// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
 using System;
-using System.Linq;
 using Android.App;
 using Android.Content;
 using Android.Media;
@@ -16,7 +15,7 @@ namespace DrunkAudible.Mobile.Android
 {
     [Service]
     [IntentFilter (new[] { ACTION_CONNECT, ACTION_PLAY, ACTION_PAUSE, ACTION_STOP })]
-    public class StreamingBackgroundService : Service, AudioManager.IOnAudioFocusChangeListener
+    public class PlayerService : Service, AudioManager.IOnAudioFocusChangeListener
     {
         // Actions
         public const string ACTION_CONNECT = "com.puncsky.drunkaudible.mobile.android.CONNECT";
@@ -38,7 +37,8 @@ namespace DrunkAudible.Mobile.Android
         bool _paused;
         Timer _episodeProgressUpdateTimer;
 
-        AudioEpisode _currentEpisode;
+        Album _currentAlbum = Album.Empty;
+        AudioEpisode _currentEpisode = AudioEpisode.Empty;
 
         const int NotificationId = 1;
 
@@ -60,7 +60,7 @@ namespace DrunkAudible.Mobile.Android
 
         public static Intent CreateIntent(Context context, String action)
         {
-            var intent = new Intent (context, typeof (StreamingBackgroundService));
+            var intent = new Intent (context, typeof (PlayerService));
             intent.SetAction (action);
             return intent;
         }
@@ -75,7 +75,7 @@ namespace DrunkAudible.Mobile.Android
 
         public override IBinder OnBind (Intent intent)
         {
-            return new StreamingBackgroundServiceBinder (this);
+            return new PlayerServiceBinder (this);
         }
 
         public override StartCommandResult OnStartCommand (Intent intent, StartCommandFlags flags, int startId)
@@ -85,8 +85,16 @@ namespace DrunkAudible.Mobile.Android
                 throw new ArgumentNullException ("intent");
             }
 
-            CurrentAlbum = ExtraUtils.GetAlbum (intent) ?? CurrentAlbum;
-            CurrentEpisode = ExtraUtils.GetAudioEpisode (intent, CurrentAlbum) ?? CurrentEpisode;
+            var extraAlbum = ExtraUtils.GetAlbum (intent);
+            if (!Album.IsNullOrEmpty (extraAlbum))
+            {
+                CurrentAlbum = extraAlbum;
+            }
+            var extraEpisode = ExtraUtils.GetAudioEpisode (intent, CurrentAlbum);
+            if (!AudioEpisode.IsNullOrEmpty (extraEpisode))
+            {
+                CurrentEpisode = extraEpisode;
+            }
 
             switch (intent.Action)
             {
@@ -200,14 +208,14 @@ namespace DrunkAudible.Mobile.Android
             }
         }
 
-        public Album CurrentAlbum { get; set; }
+        public Album CurrentAlbum { get { return _currentAlbum; } set { _currentAlbum = value; } }
 
         public AudioEpisode CurrentEpisode
         {
             get { return _currentEpisode; }
             set
             {
-                var isValidChange = value != null && value != _currentEpisode;
+                    var isValidChange = !AudioEpisode.IsNullOrEmpty (value) && value != _currentEpisode;
                 if (isValidChange)
                 {
                     Stop ();
@@ -333,7 +341,7 @@ namespace DrunkAudible.Mobile.Android
             var pendingIntent = PendingIntent.GetActivity (
                 ApplicationContext,
                 0,
-                new Intent (ApplicationContext, typeof(AudioPlayerFragment)),
+                new Intent (ApplicationContext, typeof(PlayerPresenterFragment)),
                 PendingIntentFlags.UpdateCurrent
             );
 

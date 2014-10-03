@@ -1,7 +1,6 @@
 ﻿// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
 using System;
-using System.Linq;
 using System.Threading;
 using Android.App;
 using Android.Content;
@@ -12,16 +11,13 @@ using Android.Views;
 
 namespace DrunkAudible.Mobile.Android
 {
-    public class AudioPlayerFragment : Fragment
+    public class PlayerPresenterFragment : Fragment
     {
-        StreamingBackgroundServiceConnection _connection;
+        PlayerServiceConnection _connection;
 
         const int INTERVAL = 200; // milliseconds per update of UI.
 
         const String TIME_FORMAT = "{0:mm\\:ss}";
-
-        Album _currentAlbum = Album.Empty;
-        AudioEpisode _currentEpisode = AudioEpisode.Empty;
 
         TextView _title;
         SeekBar _seekBar;
@@ -45,7 +41,18 @@ namespace DrunkAudible.Mobile.Android
         {
             base.OnActivityCreated (savedInstanceState);
 
-            Initialize ();
+            _connection = new PlayerServiceConnection (this);
+            _pauseIconString = Activity.ApplicationContext.GetString (Resource.String.ic_fa_pause);
+            _playIconString = Activity.ApplicationContext.GetString (Resource.String.ic_fa_play);
+
+            InitializeViews ();
+
+            _uIUpdateTimer = new Timer (
+                o => Activity.RunOnUiThread (UpdateFromPlayerService), // Must RunOnUiThread to update.
+                null,
+                Timeout.Infinite,
+                Timeout.Infinite
+            );
         }
 
         public static Intent CreateIntent(Context context, int albumID, int currentEpisodeID)
@@ -60,9 +67,12 @@ namespace DrunkAudible.Mobile.Android
         {
             base.OnStart ();
 
-            SendAudioCommand (StreamingBackgroundService.ACTION_CONNECT);
-            UpdateTimerViewsAndStates ((int) CurrentEpisode.Duration, (int) CurrentEpisode.CurrentTime);
-            StartUpdateTimerViewsAndStatesFromPlayerService ();
+            if (!IsBound)
+            {
+                SendAudioCommand (PlayerService.ACTION_CONNECT);
+            }
+            UpdateProgress ((int) CurrentEpisode.Duration, (int) CurrentEpisode.CurrentTime);
+            StartUpdatingFromPlayerService ();
         }
 
         public override void OnStop ()
@@ -74,7 +84,7 @@ namespace DrunkAudible.Mobile.Android
                 Activity.UnbindService (_connection);
                 IsBound = false;
             }
-            StopUpdateTimerViewsAndStatesFromPlayerService ();
+            StopUpdatingFromPlayerService ();
         }
 
         public override void OnDestroyView ()
@@ -96,55 +106,20 @@ namespace DrunkAudible.Mobile.Android
 
         public Album CurrentAlbum
         {
-            get { return _currentAlbum; }
+            get { return ExtraUtils.GetAlbum (Activity.Intent); }
             set
             {
-                _currentAlbum = value;
-                if (_currentAlbum == null)
-                {
-                    _currentAlbum = Album.Empty;
-                }
+                ExtraUtils.PutAlbum (Activity.Intent, value.Id);
             }
         }
 
         public AudioEpisode CurrentEpisode
         {
-            get { return _currentEpisode; }
+            get { return ExtraUtils.GetAudioEpisode (Activity.Intent, CurrentAlbum); }
             set
             {
-                _currentEpisode = value;
-                if (_currentEpisode == null)
-                {
-                    _currentEpisode = AudioEpisode.Empty;
-                }
-                if (_title != null)
-                {
-                    _title.Text = _currentEpisode.Title;
-                }
+                ExtraUtils.PutEpisode (Activity.Intent, value.Id);
             }
-        }
-
-        void Initialize ()
-        {
-            _connection = new StreamingBackgroundServiceConnection (this);
-            _pauseIconString = Activity.ApplicationContext.GetString (Resource.String.ic_fa_pause);
-            _playIconString = Activity.ApplicationContext.GetString (Resource.String.ic_fa_play);
-
-            InitializeExtrasFromIntent ();
-            InitializeViews ();
-
-            _uIUpdateTimer = new Timer (
-                o => Activity.RunOnUiThread (UpdateTimerViewsAndStatesFromPlayerService), // Must RunOnUiThread to update.
-                null,
-                Timeout.Infinite,
-                Timeout.Infinite
-            );
-        }
-
-        void InitializeExtrasFromIntent ()
-        {
-            CurrentAlbum = ExtraUtils.GetAlbum (Activity.Intent);
-            CurrentEpisode = ExtraUtils.GetAudioEpisode (Activity.Intent, CurrentAlbum);
         }
 
         void InitializeViews ()
@@ -152,20 +127,20 @@ namespace DrunkAudible.Mobile.Android
             _seekBar = Activity.FindViewById<SeekBar> (Resource.Id.SeekBar);
             _spentTime = Activity.FindViewById<TextView> (Resource.Id.SpentTime);
             _leftTime = Activity.FindViewById<TextView> (Resource.Id.LeftTime);
-            UpdateTimerViewsAndStates ((int) CurrentEpisode.Duration, (int) CurrentEpisode.CurrentTime);
-            _seekBar.StartTrackingTouch += (sender, e) => StopUpdateTimerViewsAndStatesFromPlayerService ();
+            UpdateProgress ((int) CurrentEpisode.Duration, (int) CurrentEpisode.CurrentTime);
+            _seekBar.StartTrackingTouch += (sender, e) => StopUpdatingFromPlayerService ();
             _seekBar.ProgressChanged += (sender, e) =>
             {
                 // The player moves to the position which the user drags to.
                 if (e.FromUser && IsBound)
                 {
-                    UpdateTimerViewsAndStates (_seekBar.Max, _seekBar.Progress);
+                    UpdateProgress (_seekBar.Max, _seekBar.Progress);
                 }
             };
             _seekBar.StopTrackingTouch += (sender, e) =>
             {
                 _connection.Binder.Service.CurrentPosition = _seekBar.Progress;
-                StartUpdateTimerViewsAndStatesFromPlayerService ();
+                StartUpdatingFromPlayerService ();
             };
 
             _playOrPauseButton = Activity.FindViewById<Button> (Resource.Id.PlayOrPauseButton);
@@ -174,11 +149,11 @@ namespace DrunkAudible.Mobile.Android
             {
                 if (!IsPlaying)
                 {
-                    SendAudioCommand (StreamingBackgroundService.ACTION_PLAY);
+                    SendAudioCommand (PlayerService.ACTION_PLAY);
                 }
                 else
                 {
-                    SendAudioCommand (StreamingBackgroundService.ACTION_PAUSE);
+                    SendAudioCommand (PlayerService.ACTION_PAUSE);
                 }
             };
 
@@ -188,12 +163,7 @@ namespace DrunkAudible.Mobile.Android
 
         void SendAudioCommand (string action)
         {
-            var intent = StreamingBackgroundService.CreateIntent (Activity, action);
-            if (StreamingBackgroundService.ACTION_PLAY)
-            {
-                ExtraUtils.PutAlbum (intent, CurrentAlbum.Id);
-                ExtraUtils.PutEpisode (intent, CurrentEpisode.Id);
-            }
+            var intent = PlayerService.CreateIntent (Activity, action);
 
             if (!IsBound)
             {
@@ -203,26 +173,29 @@ namespace DrunkAudible.Mobile.Android
             Activity.StartService (intent);
         }
 
-        void StartUpdateTimerViewsAndStatesFromPlayerService ()
+        void StartUpdatingFromPlayerService ()
         {
             _uIUpdateTimer.Change (0, INTERVAL);
         }
 
-        void StopUpdateTimerViewsAndStatesFromPlayerService ()
+        void StopUpdatingFromPlayerService ()
         {
             _uIUpdateTimer.Change (Timeout.Infinite, Timeout.Infinite);
         }
 
-        void UpdateTimerViewsAndStatesFromPlayerService ()
+        void UpdateFromPlayerService ()
         {
             if (IsPlaying)
             {
-                UpdateTimerViewsAndStates (
+                UpdateProgress (
                     _connection.Binder.Service.Duration,
                     _connection.Binder.Service.CurrentPosition
                 );
 
                 _playOrPauseButton.Text = _pauseIconString;
+                CurrentAlbum = _connection.Binder.Service.CurrentAlbum;
+                CurrentEpisode = _connection.Binder.Service.CurrentEpisode;
+                _title.Text = CurrentEpisode.Title;
             }
             else
             {
@@ -230,14 +203,14 @@ namespace DrunkAudible.Mobile.Android
             }
         }
 
-        void UpdateTimerViewsAndStates (int progressMax, int progress)
+        void UpdateProgress (int progressMax, int progress)
         {
-            UpdateSeekBarProgress (progressMax, progress);
+            UpdateSeekBar (progressMax, progress);
             UpdateTimerTextViews (progressMax, progress);
             CurrentEpisode.CurrentTime = progress;
         }
 
-        void UpdateSeekBarProgress (int progressMax, int progress)
+        void UpdateSeekBar (int progressMax, int progress)
         {
             _seekBar.Max = progressMax;
             _seekBar.Progress = progress;

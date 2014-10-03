@@ -15,27 +15,26 @@ namespace DrunkAudible.Mobile.Android
 
         public static Album GetAlbum (Intent intent)
         {
-            if (intent.HasExtra (ALBUM_ID_INTENT_EXTRA))
-            {
-                return DatabaseSingleton
+            var album = DatabaseSingleton
                     .Orm
                     .Albums
                     .FirstOrDefault (a => a.Id == intent.GetIntExtra (ALBUM_ID_INTENT_EXTRA, -1));
-            }
 
-            return null;
+            return album ?? Album.Empty;
         }
 
         public static AudioEpisode GetAudioEpisode (Intent intent, Album album)
         {
-            if (intent.HasExtra (EPISODE_ID_INTENT_EXTRA) && album != null && album.Episodes != null)
+            if (album == null || album.Episodes == null)
             {
-                return album
-                    .Episodes
-                    .FirstOrDefault (e => e.Id == intent.GetIntExtra (EPISODE_ID_INTENT_EXTRA, -1));
+                return AudioEpisode.Empty;
             }
 
-            return null;
+            var episode = album
+                    .Episodes
+                    .FirstOrDefault (e => e.Id == intent.GetIntExtra (EPISODE_ID_INTENT_EXTRA, -1));
+
+            return episode ?? AudioEpisode.Empty;
         }
 
         public static void PutAlbum (Intent intent, int albumId)

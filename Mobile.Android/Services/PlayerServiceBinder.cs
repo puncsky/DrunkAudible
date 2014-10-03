@@ -4,16 +4,16 @@ using Android.OS;
 
 namespace DrunkAudible.Mobile.Android
 {
-    public class StreamingBackgroundServiceBinder : Binder
+    public class PlayerServiceBinder : Binder
     {
-        readonly StreamingBackgroundService _service;
+        readonly PlayerService _service;
 
-        public StreamingBackgroundServiceBinder (StreamingBackgroundService service)
+        public PlayerServiceBinder (PlayerService service)
         {
             _service = service;
         }
 
-        public StreamingBackgroundService Service
+        public PlayerService Service
         {
             get
             {

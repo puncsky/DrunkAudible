@@ -3,7 +3,6 @@
 using System;
 using Android.App;
 using Android.OS;
-using Android.Content;
 
 namespace DrunkAudible.Mobile.Android
 {
@@ -20,7 +19,7 @@ namespace DrunkAudible.Mobile.Android
         static TabHolder [] _tabConfiguration =
         {
             new TabHolder (TabTitle.Home, Resource.String.ic_fa_home, new AlbumListFragment ()),
-            new TabHolder (TabTitle.Player, Resource.String.ic_fa_play_circle, new AudioPlayerFragment ()),
+            new TabHolder (TabTitle.Player, Resource.String.ic_fa_play_circle, new PlayerPresenterFragment ()),
             new TabHolder (TabTitle.Store, Resource.String.ic_fa_shopping_cart, new Fragment ()),
             new TabHolder (TabTitle.Me, Resource.String.ic_fa_user, new Fragment ()),
         };

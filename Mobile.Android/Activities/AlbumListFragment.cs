@@ -15,18 +15,13 @@ namespace DrunkAudible.Mobile.Android
     {
         const int SELECT_AUDIO_ACTIVITY_RESULT = 1;
 
-        Album _currentAlbum;
-        AudioEpisode _currentEpisode;
-
         public override View OnCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             base.OnCreateView (inflater, container, savedInstanceState);
 
             SetAssetDatabase ();
 
-            _currentAlbum = ExtraUtils.GetAlbum (Activity.Intent);
-            _currentEpisode = ExtraUtils.GetAudioEpisode (Activity.Intent, _currentAlbum);
-            ListAdapter = new AlbumListAdapter (Activity, DatabaseSingleton.Orm.Albums, _currentAlbum);
+            ListAdapter = new AlbumListAdapter (Activity, DatabaseSingleton.Orm.Albums, CurrentAlbum);
 
             return inflater.Inflate(Resource.Layout.AudioListView, container, false);
         }
@@ -41,15 +36,15 @@ namespace DrunkAudible.Mobile.Android
                 StartActivityForResult (
                     AudioListActivity.CreateIntent (
                         Activity,
-                        selectedAlbum.Id, _currentEpisode != null ? _currentEpisode.Id : -1
+                        selectedAlbum.Id, CurrentEpisode != null ? CurrentEpisode.Id : -1
                     ),
                     SELECT_AUDIO_ACTIVITY_RESULT
                 );
             };
 
-            if (_currentAlbum != null)
+            if (CurrentAlbum != null)
             {
-                ListView.SetSelection (Array.IndexOf(DatabaseSingleton.Orm.Albums, _currentAlbum));
+                ListView.SetSelection (Array.IndexOf(DatabaseSingleton.Orm.Albums, CurrentAlbum));
             }
         }
 
@@ -71,6 +66,24 @@ namespace DrunkAudible.Mobile.Android
                         }
                         break; 
                     }
+            }
+        }
+
+        Album CurrentAlbum
+        {
+            get { return ExtraUtils.GetAlbum (Activity.Intent); }
+            set
+            {
+                ExtraUtils.PutAlbum (Activity.Intent, value.Id);
+            }
+        }
+
+        AudioEpisode CurrentEpisode
+        {
+            get { return ExtraUtils.GetAudioEpisode (Activity.Intent, CurrentAlbum); }
+            set
+            {
+                ExtraUtils.PutEpisode (Activity.Intent, value.Id);
             }
         }
 

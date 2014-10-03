@@ -32,6 +32,11 @@ namespace DrunkAudible.Data.Models
 
         [Ignore]
         public static Album Empty { get { return _empty; } }
+
+        public static bool IsNullOrEmpty (Album album)
+        {
+            return album == null || album == Empty;
+        }
     }
 }
 

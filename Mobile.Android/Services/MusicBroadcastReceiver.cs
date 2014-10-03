@@ -22,7 +22,7 @@ namespace DrunkAudible.Mobile.Android
             }
 
             //signal the service to stop!
-            var stopIntent = new Intent (StreamingBackgroundService.ACTION_STOP);
+            var stopIntent = new Intent (PlayerService.ACTION_STOP);
             context.StartService (stopIntent);
         }
     }

@@ -62,6 +62,14 @@ namespace DrunkAudible.Mobile.Android
                 ExtraUtils.PutAlbum (resultIntent, _album.Id);
                 ExtraUtils.PutSelectedTab (resultIntent, (int) MainActivity.TabTitle.Player);
                 SetResult (Result.Ok, resultIntent);
+
+                StartService (PlayerService.CreateIntent (
+                        this,
+                        PlayerService.ACTION_PLAY,
+                        _album.Id,
+                        selectedEpisode.Id
+                    ));
+
                 Finish ();
             }
             else
