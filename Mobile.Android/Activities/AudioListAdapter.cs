@@ -4,19 +4,18 @@ using Android.Content;
 using Android.Views;
 using Android.Widget;
 using DrunkAudible.Data.Models;
+using Android.App;
 
 namespace DrunkAudible.Mobile.Android
 {
     public class AudioListAdapter : IconAndTitleItemListAdapter
     {
         readonly Album _album;
-        readonly AudioEpisode _currentEpisode;
 
-        public AudioListAdapter (Context context, Album album, AudioEpisode currentEpisode = null)
+        public AudioListAdapter (Context context, Album album)
             : base (context, album.Episodes)
         {
             _album = album;
-            _currentEpisode = currentEpisode;
         }
 
         public override View GetView (int position, View convertView, ViewGroup parent)
@@ -38,7 +37,7 @@ namespace DrunkAudible.Mobile.Android
                     AudioDownloader.HasLocalFile(episode.RemoteURL, episode.FileSize) ? downloadProgressBar.Max : 0;
             }
 
-            if (_currentEpisode == episode)
+            if (episode == ((DrunkAudibleApplication) (((Activity) Context).Application)).CurrentEpisode)
             {
                 var isPlayingIndicator = iconAndTitleView.FindViewById<TextView> (Resource.Id.IsPlayingIndicator);
                 IconProvider.ConvertTextViewToIcon (Context.Assets, isPlayingIndicator);

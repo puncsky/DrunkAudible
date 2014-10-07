@@ -4,6 +4,7 @@ using System;
 using Android.Content;
 using DrunkAudible.Data.Models;
 using System.Linq;
+using DrunkAudible.Data;
 
 namespace DrunkAudible.Mobile.Android
 {
@@ -13,10 +14,9 @@ namespace DrunkAudible.Mobile.Android
         public const String EPISODE_ID_INTENT_EXTRA = "EpisodeID";
         public const String SELECTED_TAB = "SelectedTab";
 
-        public static Album GetAlbum (Intent intent)
+        public static Album GetAlbum (DrunkAudibleMobileDatabase database, Intent intent)
         {
-            var album = DatabaseSingleton
-                    .Orm
+            var album = database
                     .Albums
                     .FirstOrDefault (a => a.Id == intent.GetIntExtra (ALBUM_ID_INTENT_EXTRA, -1));
 

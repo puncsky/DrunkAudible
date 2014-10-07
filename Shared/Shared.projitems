@@ -13,7 +13,6 @@
     <Folder Include="$(MSBuildThisFileDirectory)Helpers\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Data\ObjectRelationalMapping.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\SQLite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ByteArraySerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Gravatar.cs" />
@@ -25,11 +24,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data\Models\Faves.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Models\JoinTables.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Models\User.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\OrmInitializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\DownloadBytesProgress.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\AudioDownloader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Models\IIconAndTitleItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Models\Album.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Models\IManMadeItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\DrunkAudibleMobileDatabase.cs" />
   </ItemGroup>
 </Project>

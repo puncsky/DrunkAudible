@@ -106,20 +106,12 @@ namespace DrunkAudible.Mobile.Android
 
         public Album CurrentAlbum
         {
-            get { return ExtraUtils.GetAlbum (Activity.Intent); }
-            set
-            {
-                ExtraUtils.PutAlbum (Activity.Intent, value.Id);
-            }
+            get { return ((DrunkAudibleApplication) Activity.Application).CurrentAlbum; }
         }
 
         public AudioEpisode CurrentEpisode
         {
-            get { return ExtraUtils.GetAudioEpisode (Activity.Intent, CurrentAlbum); }
-            set
-            {
-                ExtraUtils.PutEpisode (Activity.Intent, value.Id);
-            }
+            get { return ((DrunkAudibleApplication) Activity.Application).CurrentEpisode; }
         }
 
         void InitializeViews ()
@@ -193,8 +185,6 @@ namespace DrunkAudible.Mobile.Android
                 );
 
                 _playOrPauseButton.Text = _pauseIconString;
-                CurrentAlbum = _connection.Binder.Service.CurrentAlbum;
-                CurrentEpisode = _connection.Binder.Service.CurrentEpisode;
                 _title.Text = CurrentEpisode.Title;
             }
             else

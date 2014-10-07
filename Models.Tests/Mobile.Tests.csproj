@@ -33,20 +33,12 @@
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="PublicPropertiesComparer.cs" />
-    <Compile Include="Data\ObjectRelationalMappingTests.cs" />
-    <Compile Include="Data\DatabaseTests.cs" />
-  </ItemGroup>
   <Import Project="..\Shared\Shared.projitems" Label="Shared" Condition="Exists('..\Shared\Shared.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Data\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="bin\Debug\DrunkAudible.Mobile.SQLite.db3">
-      <Link>DrunkAudible.Mobile.SQLite.db3</Link>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
 </Project>

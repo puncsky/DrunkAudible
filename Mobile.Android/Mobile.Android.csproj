@@ -46,7 +46,6 @@
   <ItemGroup>
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DatabaseSingleton.cs" />
     <Compile Include="AndroidImageDownloader.cs" />
     <Compile Include="AudioListView.cs" />
     <Compile Include="AndroidAudioDownloader.cs" />
@@ -64,6 +63,7 @@
     <Compile Include="Services\PlayerServiceBinder.cs" />
     <Compile Include="Services\PlayerServiceConnection.cs" />
     <Compile Include="Activities\PlayerPresenterFragment.cs" />
+    <Compile Include="DrunkAudibleApplication.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

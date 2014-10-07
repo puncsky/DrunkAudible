@@ -23,7 +23,7 @@ namespace DrunkAudible.Mobile.Android
         public const string ACTION_PAUSE = "com.puncsky.drunkaudible.mobile.android.action.PAUSE";
         public const string ACTION_STOP = "com.puncsky.drunkaudible.mobile.android.STOP";
 
-        const String DEBUG_TAG = "StreamingBackgroundService";
+        const String DEBUG_TAG = "PlayerService";
 
         const double COMPARISON_EPSILON = 0.001;
 
@@ -36,9 +36,6 @@ namespace DrunkAudible.Mobile.Android
         WifiManager.WifiLock _wifiLock;
         bool _paused;
         Timer _episodeProgressUpdateTimer;
-
-        Album _currentAlbum = Album.Empty;
-        AudioEpisode _currentEpisode = AudioEpisode.Empty;
 
         const int NotificationId = 1;
 
@@ -85,7 +82,7 @@ namespace DrunkAudible.Mobile.Android
                 throw new ArgumentNullException ("intent");
             }
 
-            var extraAlbum = ExtraUtils.GetAlbum (intent);
+            var extraAlbum = ExtraUtils.GetAlbum (((DrunkAudibleApplication) Application).Database, intent);
             if (!Album.IsNullOrEmpty (extraAlbum))
             {
                 CurrentAlbum = extraAlbum;
@@ -208,18 +205,27 @@ namespace DrunkAudible.Mobile.Android
             }
         }
 
-        public Album CurrentAlbum { get { return _currentAlbum; } set { _currentAlbum = value; } }
+        public Album CurrentAlbum
+        {
+            get { return ((DrunkAudibleApplication) Application).CurrentAlbum; }
+            set { ((DrunkAudibleApplication) Application).CurrentAlbum = value; }
+        }
 
         public AudioEpisode CurrentEpisode
         {
-            get { return _currentEpisode; }
+            get
+            {
+                return ((DrunkAudibleApplication) Application).CurrentEpisode; 
+            }
             set
             {
-                    var isValidChange = !AudioEpisode.IsNullOrEmpty (value) && value != _currentEpisode;
+                var isValidChange =
+                    !AudioEpisode.IsNullOrEmpty (value) &&
+                    value != ((DrunkAudibleApplication) Application).CurrentEpisode;
                 if (isValidChange)
                 {
                     Stop ();
-                    _currentEpisode = value;
+                    ((DrunkAudibleApplication) Application).CurrentEpisode = value;
                     Play ();
                 }
             }
@@ -262,7 +268,7 @@ namespace DrunkAudible.Mobile.Android
             {
                 Stop ();
                 CurrentEpisode.CurrentTime = CurrentEpisode.Duration;
-                DatabaseSingleton.Orm.Database.InsertOrReplace (CurrentEpisode);
+                ((DrunkAudibleApplication) Application).Database.InsertOrReplace (CurrentEpisode);
                 if (NextEpisode != null)
                 {
                     NextEpisode.CurrentTime = 0;
@@ -321,7 +327,7 @@ namespace DrunkAudible.Mobile.Android
                 }
 
                 _player.Prepare();
-                CurrentPosition = (int) _currentEpisode.CurrentTime;
+                CurrentPosition = (int) CurrentEpisode.CurrentTime;
 
                 AquireWifiLock ();
                 StartForeground ();
@@ -431,7 +437,7 @@ namespace DrunkAudible.Mobile.Android
             if (IsPlaying)
             {
                 CurrentEpisode.CurrentTime = CurrentPosition;
-                DatabaseSingleton.Orm.Database.InsertOrReplace (CurrentEpisode);
+                ((DrunkAudibleApplication) Application).Database.InsertOrReplace (CurrentEpisode);
             }
         }
     }

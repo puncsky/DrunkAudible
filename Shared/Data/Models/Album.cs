@@ -1,7 +1,6 @@
 ﻿// 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
 using System;
-using System.Collections.Generic;
 using SQLite;
 
 namespace DrunkAudible.Data.Models
@@ -23,6 +22,7 @@ namespace DrunkAudible.Data.Models
 
         [PrimaryKey]
         [AutoIncrement]
+        [Indexed]
         public int Id { get; set; }
 
         public String Title { get; set; }
@@ -37,6 +37,41 @@ namespace DrunkAudible.Data.Models
         {
             return album == null || album == Empty;
         }
+
+        #region Object overrides
+
+        public override bool Equals (object obj)
+        {
+            return this == (Album) obj;
+        }
+
+        public override int GetHashCode ()
+        {
+            return base.GetHashCode () ^ Id.GetHashCode ();
+        }
+
+        public static bool operator == (Album a, Album b)
+        {
+            if (Object.ReferenceEquals (a, b))
+            {
+                return true;
+            }
+
+            // Comparision without conversion to object will result in infinite recursion.
+            if (((object)a == null) || ((object)b == null))
+            {
+                return false;
+            }
+
+            return a.Id == b.Id;
+        }
+
+        public static bool operator != (Album a, Album b)
+        {
+            return !(a == b);
+        }
+
+        #endregion
     }
 }
 

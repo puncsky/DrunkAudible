@@ -30,6 +30,3 @@ using Android.App;
 [assembly: UsesPermission(Android.Manifest.Permission.WriteExternalStorage)]
 [assembly: UsesPermission(Android.Manifest.Permission.WakeLock)]
 
-// TODO Remove debuggable for the release version.
-[assembly: Application(Debuggable=false)]
-

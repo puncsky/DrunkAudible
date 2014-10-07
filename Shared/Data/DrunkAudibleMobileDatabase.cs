@@ -10,30 +10,27 @@ using SQLite;
 
 namespace DrunkAudible.Data
 {
-    public class ObjectRelationalMapping
+    public class DrunkAudibleMobileDatabase : SQLiteConnection
     {
         public static String DATABASE_FILE_NAME = "DrunkAudible.Mobile.SQLite.db3";
 
-        readonly SQLiteConnection _database;
-
         Album[] _albums;
 
-        public ObjectRelationalMapping()
+        public DrunkAudibleMobileDatabase()
+            : base (DatabasePath)
         {
-            _database = new SQLiteConnection (DatabasePath);
+            CreateTable<Author> ();
 
-            _database.CreateTable<Author> ();
+            CreateTable<Album> ();
+            CreateTable<AlbumToAuthors> ();
 
-            _database.CreateTable<Album> ();
-            _database.CreateTable<AlbumToAuthors> ();
+            CreateTable<AudioEpisode> ();
+            CreateTable<AudioEpisodesToAlbum> ();
 
-            _database.CreateTable<AudioEpisode> ();
-            _database.CreateTable<AudioEpisodesToAlbum> ();
-
-            _database.CreateTable<User> ();
+            CreateTable<User> ();
         }
 
-        String DatabasePath
+        public new static String DatabasePath
         {
             get
             { 
@@ -57,8 +54,8 @@ namespace DrunkAudible.Data
 
         public void InsertOrUpdate (Album album)
         {
-            Database.CreateTable<Album> ();
-            Database.InsertOrReplace (album);
+            CreateTable<Album> ();
+            InsertOrReplace (album);
 
             // Update all the related tables, because the Album instance holds the reference to the Authors collection
             // object that cannot be stored directly into the same table.
@@ -83,15 +80,15 @@ namespace DrunkAudible.Data
 
         public void ClearAll ()
         {
-            _database.DeleteAll<Author> ();
+            DeleteAll<Author> ();
 
-            _database.DeleteAll<Album> ();
-            _database.DeleteAll<AlbumToAuthors> ();
+            DeleteAll<Album> ();
+            DeleteAll<AlbumToAuthors> ();
 
-            _database.DeleteAll<AudioEpisode> ();
-            _database.DeleteAll<AudioEpisodesToAlbum> ();
+            DeleteAll<AudioEpisode> ();
+            DeleteAll<AudioEpisodesToAlbum> ();
 
-            _database.DeleteAll<User> ();
+            DeleteAll<User> ();
         }
 
         public Album[] Albums
@@ -111,7 +108,7 @@ namespace DrunkAudible.Data
         { 
             get
             {
-                var albums = Database.Table<Album> ().ToArray<Album> ();
+                var albums = Table<Album> ().ToArray<Album> ();
 
                 LoadAuthors (albums);
                 LoadEpisodes (albums);
@@ -122,26 +119,18 @@ namespace DrunkAudible.Data
             }
         }
 
-        public SQLiteConnection Database
-        {
-            get
-            {
-                return _database;
-            }
-        }
-
         void SaveAlbumAuthors (Author[] authors, int albumID)
         {
             // Update related entries in the join table.
-            Database.CreateTable<AlbumToAuthors> ();
-            var oldEntries = Database.Table<AlbumToAuthors> ().Where (a => a.AlbumId == albumID).ToArray ();
+            CreateTable<AlbumToAuthors> ();
+            var oldEntries = Table<AlbumToAuthors> ().Where (a => a.AlbumId == albumID).ToArray ();
             foreach (var oldEntry in oldEntries)
             {
-                Database.Delete (oldEntry);
+                Delete (oldEntry);
             }
             foreach (var author in authors)
             {
-                Database.Insert (new AlbumToAuthors ()
+                Insert (new AlbumToAuthors ()
                     {
                         AlbumId = albumID,
                         AuthorId = author.Id,
@@ -149,50 +138,52 @@ namespace DrunkAudible.Data
             }
 
             // Insert or update the related table for the ignored property Author.
-            Database.CreateTable<Author> ();
+            CreateTable<Author> ();
             foreach (var author in authors)
             {
-                Database.InsertOrReplace (author);
+                InsertOrReplace (author);
             }
         }
 
         void SaveAlbumEpisodes (AudioEpisode[] episodes, int albumID)
         {
             // Update related entries in the join table.
-            Database.CreateTable<AudioEpisodesToAlbum> ();
-            var oldEntries = Database.Table<AudioEpisodesToAlbum> ().Where (a => a.AlbumId == albumID).ToArray ();
+            CreateTable<AudioEpisodesToAlbum> ();
+            var oldEntries = Table<AudioEpisodesToAlbum> ().Where (a => a.AlbumId == albumID).ToArray ();
             foreach (var oldEntry in oldEntries)
             {
-                Database.Delete (oldEntry);
+                Delete (oldEntry);
             }
             foreach (var episode in episodes)
             {
-                Database.Insert (new AudioEpisodesToAlbum ()
+                Insert (new AudioEpisodesToAlbum
                     {
                         AlbumId = albumID,
                         EpisodeId = episode.Id,
-                    });
+                    }
+                );
             }
 
-            Database.CreateTable<AudioEpisode> ();
+            CreateTable<AudioEpisode> ();
             foreach (var episode in episodes)
             {
-                Database.InsertOrReplace (episode);
+                InsertOrReplace (episode);
             }
         }
 
         void LoadAuthors (Album[] albums)
         {
-            var joinTableLookUp = Database
-                .Table<AlbumToAuthors> ()
+            var joinTableLookUp = 
+                Table<AlbumToAuthors> ()
                 .ToLookup (a => a.AlbumId);
 
-            var authorsDictionary = Database
-                .Table<Author> ()
+            var authorsDictionary = 
+                Table<Author> ()
                 .ToDictionary (a => a.Id);
 
             // Set up the related property Author, because Album table in the database ingored it.
-            foreach (var album in albums) {
+            foreach (var album in albums)
+            {
                 var relatedAuthorIDs = joinTableLookUp[album.Id].Select(i => i.AuthorId);
 
                 album.Authors = relatedAuthorIDs.Select (r => authorsDictionary [r]).ToArray ();
@@ -201,16 +192,17 @@ namespace DrunkAudible.Data
 
         void LoadEpisodes (Album[] albums)
         {
-            var joinTableLookUp = Database
-                .Table<AudioEpisodesToAlbum> ()
+            var joinTableLookUp = 
+                Table<AudioEpisodesToAlbum> ()
                 .ToLookup (a => a.AlbumId);
 
-            var episodesDictionary = Database
-                .Table<AudioEpisode> ()
+            var episodesDictionary = 
+                Table<AudioEpisode> ()
                 .ToDictionary (a => a.Id);
 
             // Set up the related property Author, because Album table in the database ingored it.
-            foreach (var album in albums) {
+            foreach (var album in albums)
+            {
                 var relatedEpisodeIDs = joinTableLookUp[album.Id].Select(i => i.EpisodeId);
 
                 album.Episodes = relatedEpisodeIDs.Select (r => episodesDictionary [r]).ToArray ();

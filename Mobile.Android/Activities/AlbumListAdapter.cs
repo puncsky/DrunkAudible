@@ -4,19 +4,18 @@ using Android.Content;
 using Android.Views;
 using DrunkAudible.Data.Models;
 using Android.Widget;
+using Android.App;
 
 namespace DrunkAudible.Mobile.Android
 {
     public class AlbumListAdapter : IconAndTitleItemListAdapter
     {
         readonly Album [] _albums;
-        readonly Album _currentAlbum;
 
-        public AlbumListAdapter (Context context, Album [] albums, Album currentAlbum = null)
+        public AlbumListAdapter (Context context, Album [] albums)
             : base (context, albums)
         {
             _albums = albums;
-            _currentAlbum = currentAlbum;
         }
 
         public override View GetView (int position, View convertView, ViewGroup parent)
@@ -30,7 +29,7 @@ namespace DrunkAudible.Mobile.Android
             var progressBar = iconAndTitleView.FindViewById<ProgressBar> (Resource.Id.DownloadProgress);
             progressBar.Visibility = ViewStates.Gone;
 
-            if (_currentAlbum == album)
+            if (album == ((DrunkAudibleApplication) ((Activity) Context).Application).CurrentAlbum)
             {
                 var isPlayingIndicator = iconAndTitleView.FindViewById<TextView> (Resource.Id.IsPlayingIndicator);
                 IconProvider.ConvertTextViewToIcon (Context.Assets, isPlayingIndicator);

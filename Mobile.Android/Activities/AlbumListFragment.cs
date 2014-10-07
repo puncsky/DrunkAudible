@@ -15,13 +15,11 @@ namespace DrunkAudible.Mobile.Android
     {
         const int SELECT_AUDIO_ACTIVITY_RESULT = 1;
 
+        Album [] _albums;
+
         public override View OnCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             base.OnCreateView (inflater, container, savedInstanceState);
-
-            SetAssetDatabase ();
-
-            ListAdapter = new AlbumListAdapter (Activity, DatabaseSingleton.Orm.Albums, CurrentAlbum);
 
             return inflater.Inflate(Resource.Layout.AudioListView, container, false);
         }
@@ -30,21 +28,27 @@ namespace DrunkAudible.Mobile.Android
         {
             base.OnActivityCreated (savedInstanceState);
 
+            SetAssetDatabase ();
+
+            _albums = ((DrunkAudibleApplication) Activity.Application).Database.Albums;
+            ListAdapter = new AlbumListAdapter (Activity, _albums);
+
             ListView.ItemClick += (sender, e) =>
             {
-                var selectedAlbum = DatabaseSingleton.Orm.Albums [e.Position];
+                var selectedAlbum = _albums [e.Position];
                 StartActivityForResult (
                     AudioListActivity.CreateIntent (
                         Activity,
-                        selectedAlbum.Id, CurrentEpisode != null ? CurrentEpisode.Id : -1
+                        selectedAlbum.Id
                     ),
                     SELECT_AUDIO_ACTIVITY_RESULT
                 );
             };
 
-            if (CurrentAlbum != null)
+            var currentAlbum = ((DrunkAudibleApplication) Activity.Application).CurrentAlbum;
+            if (!Album.IsNullOrEmpty (currentAlbum))
             {
-                ListView.SetSelection (Array.IndexOf(DatabaseSingleton.Orm.Albums, CurrentAlbum));
+                ListView.SetSelection (Array.IndexOf(_albums, currentAlbum));
             }
         }
 
@@ -69,37 +73,21 @@ namespace DrunkAudible.Mobile.Android
             }
         }
 
-        Album CurrentAlbum
-        {
-            get { return ExtraUtils.GetAlbum (Activity.Intent); }
-            set
-            {
-                ExtraUtils.PutAlbum (Activity.Intent, value.Id);
-            }
-        }
-
-        AudioEpisode CurrentEpisode
-        {
-            get { return ExtraUtils.GetAudioEpisode (Activity.Intent, CurrentAlbum); }
-            set
-            {
-                ExtraUtils.PutEpisode (Activity.Intent, value.Id);
-            }
-        }
-
         #region SetDatabase
 
         // TODO move to splash screen activity
         void SetAssetDatabase()
         {
             var docFolder = System.Environment.GetFolderPath (System.Environment.SpecialFolder.Personal);
-            var dbFile = Path.Combine (docFolder, ObjectRelationalMapping.DATABASE_FILE_NAME);
+            var dbFile = Path.Combine (docFolder, DrunkAudibleMobileDatabase.DATABASE_FILE_NAME);
             if (!File.Exists (dbFile))
             {
-                var s = Activity.Assets.Open(ObjectRelationalMapping.DATABASE_FILE_NAME);  // DATA FILE RESOURCE ID
+                var s = Activity.Assets.Open (DrunkAudibleMobileDatabase.DATABASE_FILE_NAME);  // DATA FILE RESOURCE ID
                 var writeStream = new FileStream (dbFile, FileMode.OpenOrCreate, FileAccess.Write);
                 ReadWriteStream (s, writeStream);
             }
+
+            ((DrunkAudibleApplication) Activity.Application).Database = new DrunkAudibleMobileDatabase ();
         }
 
         static void ReadWriteStream(Stream readStream, Stream writeStream)

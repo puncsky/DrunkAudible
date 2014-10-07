@@ -13,7 +13,6 @@ namespace DrunkAudible.Mobile.Android
     public class AudioListActivity : ListActivity
     {
         Album _album;
-        AudioEpisode _currentEpisode;
 
         const String DEBUG_TAG = "AudioListActivity";
 
@@ -22,16 +21,18 @@ namespace DrunkAudible.Mobile.Android
             base.OnCreate (savedInstanceState);
 
             SetContentView (Resource.Layout.AudioListView);
-            _album = ExtraUtils.GetAlbum (Intent);
+            _album = ExtraUtils.GetAlbum (((DrunkAudibleApplication) Application).Database, Intent);
             Title = _album.Title;
-            _currentEpisode = ExtraUtils.GetAudioEpisode (Intent, _album);
-            ListAdapter = new AudioListAdapter (this, _album, _currentEpisode);
+            ListAdapter = new AudioListAdapter (this, _album);
             ListView.ItemClick += OnAlbumItemClicked;
 
-            if (_currentEpisode != null)
+            if (_album == ((DrunkAudibleApplication) Application).CurrentAlbum)
             {
-                var position = Array.IndexOf (_album.Episodes, _currentEpisode);
-                ListView.SetSelection (position);
+                var currentEpisode = ((DrunkAudibleApplication) Application).CurrentEpisode;
+                if (!AudioEpisode.IsNullOrEmpty (currentEpisode))
+                {
+                    ListView.SetSelection (Array.IndexOf (_album.Episodes, currentEpisode));
+                }
             }
         }
 

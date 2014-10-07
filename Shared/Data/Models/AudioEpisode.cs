@@ -34,6 +34,7 @@ namespace DrunkAudible.Data.Models
 
         [PrimaryKey]
         [AutoIncrement]
+        [Indexed]
         public int Id { get; set; }
 
         public String RemoteURL { get; set; }
@@ -47,6 +48,41 @@ namespace DrunkAudible.Data.Models
         {
             return episode == null || episode == Empty;
         }
+
+        #region Object overrides
+
+        public override bool Equals (object obj)
+        {
+            return this == (AudioEpisode) obj;
+        }
+
+        public override int GetHashCode ()
+        {
+            return base.GetHashCode () ^ Id.GetHashCode ();
+        }
+
+        public static bool operator == (AudioEpisode a, AudioEpisode b)
+        {
+            if (Object.ReferenceEquals (a, b))
+            {
+                return true;
+            }
+
+            // Comparision without conversion to object will result in infinite recursion.
+            if (((object)a == null) || ((object)b == null))
+            {
+                return false;
+            }
+
+            return a.Id == b.Id;
+        }
+
+        public static bool operator != (AudioEpisode a, AudioEpisode b)
+        {
+            return !(a == b);
+        }
+
+        #endregion
     }
 }
 
