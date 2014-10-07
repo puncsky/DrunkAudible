@@ -344,10 +344,15 @@ namespace DrunkAudible.Mobile.Android
         /// </summary>
         void StartForeground ()
         {
+            var intent = new Intent (ApplicationContext, typeof (MainActivity));
+            intent.SetAction (Intent.ActionMain);
+            intent.AddCategory (Intent.CategoryLauncher);
+            ExtraUtils.PutSelectedTab (intent, (int) MainActivity.TabTitle.Player);
+
             var pendingIntent = PendingIntent.GetActivity (
                 ApplicationContext,
                 0,
-                new Intent (ApplicationContext, typeof(PlayerPresenterFragment)),
+                intent,
                 PendingIntentFlags.UpdateCurrent
             );
 

@@ -80,14 +80,12 @@ namespace DrunkAudible.Mobile.Android
         {
             var docFolder = System.Environment.GetFolderPath (System.Environment.SpecialFolder.Personal);
             var dbFile = Path.Combine (docFolder, DrunkAudibleMobileDatabase.DATABASE_FILE_NAME);
-            if (!File.Exists (dbFile))
-            {
-                var s = Activity.Assets.Open (DrunkAudibleMobileDatabase.DATABASE_FILE_NAME);  // DATA FILE RESOURCE ID
-                var writeStream = new FileStream (dbFile, FileMode.OpenOrCreate, FileAccess.Write);
-                ReadWriteStream (s, writeStream);
-            }
-
-            ((DrunkAudibleApplication) Activity.Application).Database = new DrunkAudibleMobileDatabase ();
+//            if (!File.Exists (dbFile))
+//            {
+            var s = Activity.Assets.Open (DrunkAudibleMobileDatabase.DATABASE_FILE_NAME);  // DATA FILE RESOURCE ID
+            var writeStream = new FileStream (dbFile, FileMode.OpenOrCreate, FileAccess.Write);
+            ReadWriteStream (s, writeStream);
+//            }
         }
 
         static void ReadWriteStream(Stream readStream, Stream writeStream)
