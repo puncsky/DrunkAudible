@@ -20,7 +20,7 @@ namespace DrunkAudible.Mobile.Android
         {
             new TabHolder (TabTitle.Home, Resource.String.ic_fa_home, new AlbumListFragment ()),
             new TabHolder (TabTitle.Player, Resource.String.ic_fa_play_circle, new PlayerPresenterFragment ()),
-            new TabHolder (TabTitle.Store, Resource.String.ic_fa_shopping_cart, new Fragment ()),
+            new TabHolder (TabTitle.Store, Resource.String.ic_fa_shopping_cart, new StoreFragment ()),
             new TabHolder (TabTitle.Me, Resource.String.ic_fa_user, new Fragment ()),
         };
 

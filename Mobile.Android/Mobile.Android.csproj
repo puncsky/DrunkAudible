@@ -42,6 +42,8 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
+    <Reference Include="Mono.Android.Export" />
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Resources\Resource.designer.cs" />
@@ -64,6 +66,7 @@
     <Compile Include="Services\PlayerServiceConnection.cs" />
     <Compile Include="Activities\PlayerPresenterFragment.cs" />
     <Compile Include="DrunkAudibleApplication.cs" />
+    <Compile Include="Activities\StoreFragment.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -94,6 +97,7 @@
     <AndroidResource Include="Resources\values\Icons.xml" />
     <AndroidResource Include="Resources\layout\Tab.axml" />
     <AndroidResource Include="Resources\layout-land\Tab.axml" />
+    <AndroidResource Include="Resources\layout\StoreWebView.axml" />
   </ItemGroup>
   <Import Project="..\Shared\Shared.projitems" Label="Shared" Condition="Exists('..\Shared\Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
