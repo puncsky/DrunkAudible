@@ -10,3 +10,11 @@ _UpgradeReport_Files
 [Pp]ackages
 
 *.db3
+
+*.pidb
+*.swp
+*.nib
+*/bin/*
+*/obj/*
+*/*/bin/*
+*/*/obj/*
