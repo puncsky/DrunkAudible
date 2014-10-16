@@ -7,7 +7,7 @@ namespace DrunkAudible.Data.Models
 {
     public class AudioEpisode : IManMadeItem, IIconAndTitleItem
     {
-        static readonly AudioEpisode _empty = new AudioEpisode ();
+        static readonly AudioEpisode _empty = new AudioEpisode () { Title = "DrunkAudible - No Title Selected!" };
 
         [Ignore]
         public Author[] Authors { get; set; }

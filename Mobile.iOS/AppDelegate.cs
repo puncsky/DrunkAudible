@@ -2,6 +2,7 @@
 
 using Foundation;
 using UIKit;
+using DrunkAudible.Data.Models;
 
 namespace Mobile.iOS
 {
@@ -11,6 +12,9 @@ namespace Mobile.iOS
     [Register ("AppDelegate")]
     public partial class AppDelegate : UIApplicationDelegate
     {
+        Album _currentAlbum = Album.Empty;
+        AudioEpisode _currentEpisode = AudioEpisode.Empty;
+
         // This method is invoked when the application is about to move from active to inactive state.
         // OpenGL applications should use this method to pause.
         public override void OnResignActivation (UIApplication application)
@@ -34,11 +38,26 @@ namespace Mobile.iOS
         {
         }
 
+        public override void FinishedLaunching (UIApplication application)
+        {
+            AppDelegate.Self = this;
+        }
+
         public override UIWindow Window
         {
             get;
             set;
         }
+
+        public static AppDelegate Self
+        {
+            get;
+            set;
+        }
+
+        public Album CurrentAlbum { get { return _currentAlbum; } set { _currentAlbum = value; } }
+
+        public AudioEpisode CurrentEpisode { get { return _currentEpisode; } set { _currentEpisode = value; } }
     }
 }
 

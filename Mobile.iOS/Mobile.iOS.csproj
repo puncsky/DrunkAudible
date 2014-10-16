@@ -116,6 +116,9 @@
     <Compile Include="Controllers\PlayerController.cs" />
     <Compile Include="Controllers\MeController.cs" />
     <Compile Include="Controllers\StoreController.cs" />
+    <Compile Include="Controllers\PlayerController.designer.cs">
+      <DependentUpon>PlayerController.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="MainStoryboard.storyboard" />
