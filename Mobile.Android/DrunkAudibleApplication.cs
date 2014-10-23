@@ -16,7 +16,7 @@ namespace DrunkAudible.Mobile.Android
 
         AudioEpisode _currentEpisode = AudioEpisode.Empty;
 
-        DrunkAudibleMobileDatabase _database = new DrunkAudibleMobileDatabase ();
+        readonly DrunkAudibleMobileDatabase _database = new DrunkAudibleMobileDatabase ();
 
         // Must specify the ctor. Otherwise, System.NotSupportedException will be thrown.
         public DrunkAudibleApplication(IntPtr javaReference, JniHandleOwnership transfer)

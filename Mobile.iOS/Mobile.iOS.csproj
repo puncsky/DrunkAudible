@@ -104,6 +104,7 @@
     <BundleResource Include="Resources\first%402x.png" />
     <BundleResource Include="Resources\second.png" />
     <BundleResource Include="Resources\second%402x.png" />
+    <BundleResource Include="Resources\DrunkAudible.Mobile.SQLite.db3" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -119,6 +120,14 @@
     <Compile Include="Controllers\PlayerController.designer.cs">
       <DependentUpon>PlayerController.cs</DependentUpon>
     </Compile>
+    <Compile Include="AlbumTableView.designer.cs">
+      <DependentUpon>IconAndTitleItemTableViewSource.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\HomeController.designer.cs">
+      <DependentUpon>HomeController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IconAndTitleItemTableViewSource.cs" />
+    <Compile Include="iOSImageDownloader.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="MainStoryboard.storyboard" />

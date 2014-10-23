@@ -14,7 +14,6 @@ namespace DrunkAudible.Mobile.Android
     public class IconAndTitleItemListAdapter : BaseAdapter
     {
         readonly IIconAndTitleItem [] _items;
-        readonly ImageDownloader _imageDownloader = new AndroidImageDownloader ();
 
         public IconAndTitleItemListAdapter (Context context, IIconAndTitleItem [] items)
         {
@@ -75,6 +74,7 @@ namespace DrunkAudible.Mobile.Android
 
         #region Image Support
 
+        readonly ImageDownloader _imageDownloader = new AndroidImageDownloader ();
         readonly Dictionary<int, Bitmap> _images = new Dictionary<int, Bitmap> ();
         readonly List<int> _imageDownloadsInProgress = new List<int> ();
 
@@ -125,7 +125,8 @@ namespace DrunkAudible.Mobile.Android
             _images [audio.Id] = image;
             _imageDownloadsInProgress.Remove (audio.Id);
 
-            // Locate the the child view and update.
+            // Locate the the child view and update, because GetChildViewAt(n) only get the n-th view from the visible
+            // area but position only corresponds to the _items array.
             var firstPostion = listView.FirstVisiblePosition - listView.HeaderViewsCount;
             var childIndex = position - firstPostion;
             if (0 <= childIndex && childIndex < listView.ChildCount)

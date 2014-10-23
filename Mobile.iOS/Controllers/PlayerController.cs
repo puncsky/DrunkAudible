@@ -22,18 +22,17 @@ namespace Mobile.iOS
         public override void AwakeFromNib ()
         {
             base.AwakeFromNib ();
-
-            var fileUrl = NSBundle.MainBundle.PathForResource ("sample", "m4a");
-            _player = AVAudioPlayer.FromUrl (new NSUrl (fileUrl, false));
-            _player.FinishedPlaying += (sender, e) =>
-            {
-                if (!e.Status)
-                {
-                    Console.WriteLine ("Did not complete successfully");
-                }
-                _player.CurrentTime = 0;
-                UpdateViewForPlayerState ();
-            };
+//            var fileUrl = NSBundle.MainBundle.PathForResource ("sample", "m4a");
+//            _player = AVAudioPlayer.FromUrl (new NSUrl (fileUrl, false));
+//            _player.FinishedPlaying += (sender, e) =>
+//            {
+//                if (!e.Status)
+//                {
+//                    Console.WriteLine ("Did not complete successfully");
+//                }
+//                _player.CurrentTime = 0;
+//                UpdateViewForPlayerState ();
+//            };
 
             SetSharedInstanceForRemoteControl ();
         }

@@ -11,19 +11,11 @@ using System.CodeDom.Compiler;
 
 namespace Mobile.iOS
 {
-	[Register ("HomeController")]
-	partial class HomeController
+	[Register ("AlbumTableView")]
+	partial class AlbumTableView
 	{
-		[Outlet]
-		[GeneratedCode ("iOS Designer", "1.0")]
-		UITableView _albumTableView { get; set; }
-
 		void ReleaseDesignerOutlets ()
 		{
-			if (_albumTableView != null) {
-				_albumTableView.Dispose ();
-				_albumTableView = null;
-			}
 		}
 	}
 }
