@@ -79,7 +79,9 @@ namespace DrunkAudible.Mobile.Android
         {
             if (intent == null)
             {
-                throw new ArgumentNullException ("intent");
+                // Re-launch the app after running with stop status in the background for a long time.
+                // At this time, intent is null and throwing exceptions will break the app.
+                return StartCommandResult.Sticky;
             }
 
             var extraAlbum = ExtraUtils.GetAlbum (((DrunkAudibleApplication) Application).Database, intent);
