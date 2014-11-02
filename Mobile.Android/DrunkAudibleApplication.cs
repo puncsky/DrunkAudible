@@ -22,6 +22,7 @@ namespace DrunkAudible.Mobile.Android
         public DrunkAudibleApplication(IntPtr javaReference, JniHandleOwnership transfer)
             : base(javaReference, transfer)
         {
+            Self = this;
         }
 
         public Album CurrentAlbum { get { return _currentAlbum; } set { _currentAlbum = value; } }
@@ -29,6 +30,8 @@ namespace DrunkAudible.Mobile.Android
         public AudioEpisode CurrentEpisode { get { return _currentEpisode; } set { _currentEpisode = value; } }
 
         public DrunkAudibleMobileDatabase Database { get { return _database; } set { value = _database; } }
+
+        public static DrunkAudibleApplication Self { get; private set; }
     }
 }
 

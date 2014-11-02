@@ -13,20 +13,22 @@ namespace DrunkAudible.Mobile.Android
 {
     public class IconAndTitleItemListAdapter : BaseAdapter
     {
-        readonly IIconAndTitleItem [] _items;
+        readonly List<IIconAndTitleItem> _items;
         readonly ImageDownloader _imageDownloader = new AndroidImageDownloader ();
+        readonly int _cellLayout;
 
-        public IconAndTitleItemListAdapter (Context context, IIconAndTitleItem [] items)
+        public IconAndTitleItemListAdapter (Context context, List<IIconAndTitleItem> items, int cellLayout)
         {
             _items = items;
             Context = context;
+            _cellLayout = cellLayout;
         }
 
         public override int Count
         {
             get
             {
-                return _items.Length;
+                return _items.Count;
             }
         }
 
@@ -45,7 +47,7 @@ namespace DrunkAudible.Mobile.Android
             var item = _items [position];
 
             var inflater = (LayoutInflater) Context.GetSystemService (Context.LayoutInflaterService);
-            var rowView = inflater.Inflate (Resource.Layout.AudioListViewElement, parent, false);
+            var rowView = inflater.Inflate (_cellLayout, parent, false);
 
             var title = rowView.FindViewById<TextView> (Resource.Id.Title);
             var icon = rowView.FindViewById<ImageView> (Resource.Id.Icon);

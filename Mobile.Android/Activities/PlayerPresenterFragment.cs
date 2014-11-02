@@ -106,12 +106,12 @@ namespace DrunkAudible.Mobile.Android
 
         public Album CurrentAlbum
         {
-            get { return ((DrunkAudibleApplication) Activity.Application).CurrentAlbum; }
+            get { return DrunkAudibleApplication.Self.CurrentAlbum; }
         }
 
         public AudioEpisode CurrentEpisode
         {
-            get { return ((DrunkAudibleApplication) Activity.Application).CurrentEpisode; }
+            get { return DrunkAudibleApplication.Self.CurrentEpisode; }
         }
 
         void InitializeViews ()

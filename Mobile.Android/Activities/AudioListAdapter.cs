@@ -1,10 +1,10 @@
 ﻿// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
+using System.Linq;
 using Android.Content;
 using Android.Views;
 using Android.Widget;
 using DrunkAudible.Data.Models;
-using Android.App;
 
 namespace DrunkAudible.Mobile.Android
 {
@@ -13,7 +13,7 @@ namespace DrunkAudible.Mobile.Android
         readonly Album _album;
 
         public AudioListAdapter (Context context, Album album)
-            : base (context, album.Episodes)
+            : base (context, album.Episodes.ToList<IIconAndTitleItem> (), Resource.Layout.AudioListViewElement)
         {
             _album = album;
         }
@@ -23,9 +23,9 @@ namespace DrunkAudible.Mobile.Android
             var episode = _album.Episodes[position];
 
             View iconAndTitleView;
-            if (AndroidAudioDownloader.ViewsDownloadInProgressByAudioId.ContainsKey (episode.RemoteURL))
+            if (AndroidAudioDownloader.ViewsDownloadInProgressByAudioId.ContainsKey (episode.RemoteUrl))
             {
-                iconAndTitleView = AndroidAudioDownloader.ViewsDownloadInProgressByAudioId [episode.RemoteURL];
+                iconAndTitleView = AndroidAudioDownloader.ViewsDownloadInProgressByAudioId [episode.RemoteUrl];
             }
             else
             {
@@ -34,10 +34,10 @@ namespace DrunkAudible.Mobile.Android
 
                 var downloadProgressBar = iconAndTitleView.FindViewById<ProgressBar> (Resource.Id.DownloadProgress);
                 downloadProgressBar.Progress =
-                    AudioDownloader.HasLocalFile(episode.RemoteURL, episode.FileSize) ? downloadProgressBar.Max : 0;
+                    AudioDownloader.HasLocalFile(episode.RemoteUrl, episode.FileSize) ? downloadProgressBar.Max : 0;
             }
 
-            if (episode == ((DrunkAudibleApplication) (((Activity) Context).Application)).CurrentEpisode)
+            if (episode == DrunkAudibleApplication.Self.CurrentEpisode)
             {
                 var isPlayingIndicator = iconAndTitleView.FindViewById<TextView> (Resource.Id.IsPlayingIndicator);
                 IconProvider.ConvertTextViewToIcon (Context.Assets, isPlayingIndicator);

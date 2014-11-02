@@ -14,7 +14,7 @@ namespace DrunkAudible.Data
     {
         public static String DATABASE_FILE_NAME = "DrunkAudible.Mobile.SQLite.db3";
 
-        Album[] _albums;
+        List<Album> _albums;
 
         public DrunkAudibleMobileDatabase()
             : base (DatabasePath)
@@ -70,7 +70,7 @@ namespace DrunkAudible.Data
             }
         }
 
-        public void InsertOrUpdate (Album[] albums)
+        public void InsertOrUpdate (List<Album> albums)
         {
             foreach (var album in albums)
             {
@@ -91,7 +91,7 @@ namespace DrunkAudible.Data
             DeleteAll<User> ();
         }
 
-        public Album[] Albums
+        public List<Album> Albums
         { 
             get
             {
@@ -104,11 +104,11 @@ namespace DrunkAudible.Data
             }
         }
 
-        public Album[] LoadAlbums
+        public List<Album> LoadAlbums
         { 
             get
             {
-                var albums = Table<Album> ().ToArray<Album> ();
+                var albums = Table<Album> ().ToList<Album> ();
 
                 LoadAuthors (albums);
                 LoadEpisodes (albums);
@@ -171,7 +171,7 @@ namespace DrunkAudible.Data
             }
         }
 
-        void LoadAuthors (Album[] albums)
+        void LoadAuthors (List<Album> albums)
         {
             var joinTableLookUp = 
                 Table<AlbumToAuthors> ()
@@ -190,7 +190,7 @@ namespace DrunkAudible.Data
             }
         }
 
-        void LoadEpisodes (Album[] albums)
+        void LoadEpisodes (List<Album> albums)
         {
             var joinTableLookUp = 
                 Table<AudioEpisodesToAlbum> ()
@@ -205,7 +205,7 @@ namespace DrunkAudible.Data
             {
                 var relatedEpisodeIDs = joinTableLookUp[album.Id].Select(i => i.EpisodeId);
 
-                album.Episodes = relatedEpisodeIDs.Select (r => episodesDictionary [r]).ToArray ();
+                album.Episodes = relatedEpisodeIDs.Select (r => episodesDictionary [r]).ToList ();
             }
         }
     }

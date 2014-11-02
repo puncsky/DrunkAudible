@@ -5,8 +5,11 @@
     <string name="By">By </string>
     <string name="NarratedBy">Narrated by </string>
 
-    <string name="NoFavoritesText">You do not have any favorites. Add them by searching.</string>
+    <string name="NoFavoritesText">You do not have any favorites. Add them at the online store tab.</string>
+    <string name="NoStoreContent">Loading...</string>
 
     <string name="NotificationContentText">by {0} with love</string>
     <string name="NoticifationTicker">Started playing {0}!</string>
+
+    <string name="AddedToFaves">Album added to favorites!</string>
 </resources>

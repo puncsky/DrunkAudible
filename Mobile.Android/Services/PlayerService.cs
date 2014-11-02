@@ -84,7 +84,7 @@ namespace DrunkAudible.Mobile.Android
                 return StartCommandResult.Sticky;
             }
 
-            var extraAlbum = ExtraUtils.GetAlbum (((DrunkAudibleApplication) Application).Database, intent);
+            var extraAlbum = ExtraUtils.GetAlbum (DrunkAudibleApplication.Self.Database, intent);
             if (!Album.IsNullOrEmpty (extraAlbum))
             {
                 CurrentAlbum = extraAlbum;
@@ -209,25 +209,25 @@ namespace DrunkAudible.Mobile.Android
 
         public Album CurrentAlbum
         {
-            get { return ((DrunkAudibleApplication) Application).CurrentAlbum; }
-            set { ((DrunkAudibleApplication) Application).CurrentAlbum = value; }
+            get { return DrunkAudibleApplication.Self.CurrentAlbum; }
+            set { DrunkAudibleApplication.Self.CurrentAlbum = value; }
         }
 
         public AudioEpisode CurrentEpisode
         {
             get
             {
-                return ((DrunkAudibleApplication) Application).CurrentEpisode; 
+                return DrunkAudibleApplication.Self.CurrentEpisode; 
             }
             set
             {
                 var isValidChange =
                     !AudioEpisode.IsNullOrEmpty (value) &&
-                    value != ((DrunkAudibleApplication) Application).CurrentEpisode;
+                    value != DrunkAudibleApplication.Self.CurrentEpisode;
                 if (isValidChange)
                 {
                     Stop ();
-                    ((DrunkAudibleApplication) Application).CurrentEpisode = value;
+                    DrunkAudibleApplication.Self.CurrentEpisode = value;
                     Play ();
                 }
             }
@@ -237,12 +237,12 @@ namespace DrunkAudible.Mobile.Android
         {
             get
             {
-                var currentIndex = Array.IndexOf (CurrentAlbum.Episodes, CurrentEpisode);
+                var currentIndex =  CurrentAlbum.Episodes.IndexOf(CurrentEpisode);
                 var nextIndex = currentIndex + 1;
-                if (nextIndex < CurrentAlbum.Episodes.Length)
+                if (nextIndex < CurrentAlbum.Episodes.Count)
                 {
                     var nextEpisode = CurrentAlbum.Episodes [nextIndex];
-                    if (AudioDownloader.HasLocalFile (nextEpisode.RemoteURL, nextEpisode.FileSize))
+                    if (AudioDownloader.HasLocalFile (nextEpisode.RemoteUrl, nextEpisode.FileSize))
                     {
                         return nextEpisode;
                     }
@@ -270,7 +270,7 @@ namespace DrunkAudible.Mobile.Android
             {
                 Stop ();
                 CurrentEpisode.CurrentTime = CurrentEpisode.Duration;
-                ((DrunkAudibleApplication) Application).Database.InsertOrReplace (CurrentEpisode);
+                DrunkAudibleApplication.Self.Database.InsertOrReplace (CurrentEpisode);
                 if (NextEpisode != null)
                 {
                     NextEpisode.CurrentTime = 0;
@@ -311,11 +311,11 @@ namespace DrunkAudible.Mobile.Android
             {
                 if (CurrentEpisode == null ||
                     Math.Abs (CurrentEpisode.Duration - CurrentEpisode.CurrentTime) < COMPARISON_EPSILON ||
-                    !AudioDownloader.HasLocalFile (CurrentEpisode.RemoteURL, CurrentEpisode.FileSize))
+                    !AudioDownloader.HasLocalFile (CurrentEpisode.RemoteUrl, CurrentEpisode.FileSize))
                 {
                     return;
                 }
-                var file = new Java.IO.File (AudioDownloader.GetFilePath(CurrentEpisode.RemoteURL));
+                var file = new Java.IO.File (AudioDownloader.GetFilePath(CurrentEpisode.RemoteUrl));
                 var fis = new Java.IO.FileInputStream (file);
 
                 // TODO reorganize it to play selected audio.
@@ -444,7 +444,7 @@ namespace DrunkAudible.Mobile.Android
             if (IsPlaying)
             {
                 CurrentEpisode.CurrentTime = CurrentPosition;
-                ((DrunkAudibleApplication) Application).Database.InsertOrReplace (CurrentEpisode);
+                DrunkAudibleApplication.Self.Database.InsertOrReplace (CurrentEpisode);
             }
         }
     }

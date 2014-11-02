@@ -1,19 +1,20 @@
 ﻿// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
+using System.Collections.Generic;
+using System.Linq;
 using Android.Content;
 using Android.Views;
-using DrunkAudible.Data.Models;
 using Android.Widget;
-using Android.App;
+using DrunkAudible.Data.Models;
 
 namespace DrunkAudible.Mobile.Android
 {
     public class AlbumListAdapter : IconAndTitleItemListAdapter
     {
-        readonly Album [] _albums;
+        readonly List<Album> _albums;
 
-        public AlbumListAdapter (Context context, Album [] albums)
-            : base (context, albums)
+        public AlbumListAdapter (Context context, List<Album> albums)
+            : base (context, albums.ToList<IIconAndTitleItem> (), Resource.Layout.AudioListViewElement)
         {
             _albums = albums;
         }
@@ -29,7 +30,7 @@ namespace DrunkAudible.Mobile.Android
             var progressBar = iconAndTitleView.FindViewById<ProgressBar> (Resource.Id.DownloadProgress);
             progressBar.Visibility = ViewStates.Gone;
 
-            if (album == ((DrunkAudibleApplication) ((Activity) Context).Application).CurrentAlbum)
+            if (album == DrunkAudibleApplication.Self.CurrentAlbum)
             {
                 var isPlayingIndicator = iconAndTitleView.FindViewById<TextView> (Resource.Id.IsPlayingIndicator);
                 IconProvider.ConvertTextViewToIcon (Context.Assets, isPlayingIndicator);

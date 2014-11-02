@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:orientation="vertical"
+    android:padding="6dip">
+    <ImageView
+        android:id="@+id/Icon"
+        android:layout_width="72sp"
+        android:layout_height="72sp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="6dip"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_launcher" />
+    <TextView
+        android:id="@+id/Title"
+        android:layout_width="fill_parent"
+        android:layout_height="24dip"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_toRightOf="@id/Icon"
+        android:gravity="center_vertical"
+        android:text="AudioListViewElement Title"
+        android:textSize="16sp" />
+    <TextView
+        android:id="@+id/By"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Title"
+        android:layout_marginRight="1sp"
+        android:ellipsize="marquee"
+        android:layout_toRightOf="@id/Icon"
+        android:text="@string/By"
+        android:textSize="7sp" />
+    <TextView
+        android:id="@+id/Authors"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Title"
+        android:ellipsize="marquee"
+        android:layout_toRightOf="@id/By"
+        android:text="Names of Authors"
+        android:textSize="7sp" />
+    <TextView
+        android:id="@+id/NarratedBy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/By"
+        android:layout_marginRight="1sp"
+        android:ellipsize="marquee"
+        android:layout_toRightOf="@id/Icon"
+        android:text="@string/NarratedBy"
+        android:textSize="7sp" />
+    <TextView
+        android:id="@+id/Narrator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:layout_below="@id/Authors"
+        android:layout_toRightOf="@id/NarratedBy"
+        android:text="Narrator"
+        android:textSize="7sp" />
+    <TextView
+        android:layout_below="@id/NarratedBy"
+        android:layout_toRightOf="@id/Icon"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Description"
+        android:id="@+id/Description"
+        android:textSize="10sp" />
+    <TextView
+        android:id="@+id/Starred"
+        android:layout_width="24sp"
+        android:layout_height="fill_parent"
+        android:layout_alignParentRight="true"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="6dip"
+        android:text="@string/ic_fa_star"
+        android:textSize="20sp"
+        android:visibility="gone" />
+</RelativeLayout>

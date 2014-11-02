@@ -1,6 +1,7 @@
 ﻿// 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
 using System;
+using System.Collections.Generic;
 using SQLite;
 
 namespace DrunkAudible.Data.Models
@@ -25,10 +26,12 @@ namespace DrunkAudible.Data.Models
         [Indexed]
         public int Id { get; set; }
 
+        public int SeqId { get; set; }
+
         public String Title { get; set; }
 
         [Ignore]
-        public AudioEpisode[] Episodes { get; set; }
+        public List<AudioEpisode> Episodes { get; set; }
 
         [Ignore]
         public static Album Empty { get { return _empty; } }

@@ -1,13 +1,14 @@
 ﻿// (c) 2012-2014 Tian Pan (www.puncsky.com). All Rights Reserved.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Android.App;
+using Android.Content;
 using Android.OS;
+using Android.Views;
 using DrunkAudible.Data;
 using DrunkAudible.Data.Models;
-using Android.Views;
-using Android.Content;
 
 namespace DrunkAudible.Mobile.Android
 {
@@ -15,7 +16,7 @@ namespace DrunkAudible.Mobile.Android
     {
         const int SELECT_AUDIO_ACTIVITY_RESULT = 1;
 
-        Album [] _albums;
+        List<Album> _albums;
 
         public override View OnCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -28,9 +29,7 @@ namespace DrunkAudible.Mobile.Android
         {
             base.OnActivityCreated (savedInstanceState);
 
-            SetAssetDatabase ();
-
-            _albums = ((DrunkAudibleApplication) Activity.Application).Database.Albums;
+            _albums = DrunkAudibleApplication.Self.Database.Albums;
             ListAdapter = new AlbumListAdapter (Activity, _albums);
 
             ListView.ItemClick += (sender, e) =>
@@ -45,10 +44,10 @@ namespace DrunkAudible.Mobile.Android
                 );
             };
 
-            var currentAlbum = ((DrunkAudibleApplication) Activity.Application).CurrentAlbum;
+            var currentAlbum = DrunkAudibleApplication.Self.CurrentAlbum;
             if (!Album.IsNullOrEmpty (currentAlbum))
             {
-                ListView.SetSelection (Array.IndexOf(_albums, currentAlbum));
+                ListView.SetSelection (_albums.IndexOf(currentAlbum));
             }
         }
 

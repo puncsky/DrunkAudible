@@ -8,4 +8,5 @@
     <string name="ic_fa_shopping_cart">&#xf07a;</string>
     <string name="ic_fa_play">&#xf04b;</string>
     <string name="ic_fa_pause">&#xf04c;</string>
+    <string name="ic_fa_star">&#xf005;</string>
 </resources>

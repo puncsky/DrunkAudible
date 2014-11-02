@@ -30,5 +30,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data\Models\Album.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Models\IManMadeItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\DrunkAudibleMobileDatabase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebServiceClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebServiceRequest.cs" />
   </ItemGroup>
 </Project>

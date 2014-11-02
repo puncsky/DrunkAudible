@@ -21,17 +21,17 @@ namespace DrunkAudible.Mobile.Android
             base.OnCreate (savedInstanceState);
 
             SetContentView (Resource.Layout.AudioListView);
-            _album = ExtraUtils.GetAlbum (((DrunkAudibleApplication) Application).Database, Intent);
+            _album = ExtraUtils.GetAlbum (DrunkAudibleApplication.Self.Database, Intent);
             Title = _album.Title;
             ListAdapter = new AudioListAdapter (this, _album);
             ListView.ItemClick += OnAlbumItemClicked;
 
-            if (_album == ((DrunkAudibleApplication) Application).CurrentAlbum)
+            if (_album == DrunkAudibleApplication.Self.CurrentAlbum)
             {
-                var currentEpisode = ((DrunkAudibleApplication) Application).CurrentEpisode;
+                var currentEpisode = DrunkAudibleApplication.Self.CurrentEpisode;
                 if (!AudioEpisode.IsNullOrEmpty (currentEpisode))
                 {
-                    ListView.SetSelection (Array.IndexOf (_album.Episodes, currentEpisode));
+                    ListView.SetSelection (_album.Episodes.IndexOf(currentEpisode));
                 }
             }
         }
@@ -51,12 +51,12 @@ namespace DrunkAudible.Mobile.Android
         {
             var selectedEpisode = _album.Episodes [e.Position];
 
-            if (AndroidAudioDownloader.ViewsDownloadInProgressByAudioId.ContainsKey (selectedEpisode.RemoteURL))
+            if (AndroidAudioDownloader.ViewsDownloadInProgressByAudioId.ContainsKey (selectedEpisode.RemoteUrl))
             {
                 return;
             }
 
-            if (AudioDownloader.HasLocalFile (selectedEpisode.RemoteURL, selectedEpisode.FileSize))
+            if (AudioDownloader.HasLocalFile (selectedEpisode.RemoteUrl, selectedEpisode.FileSize))
             {
                 var resultIntent = new Intent ();
                 ExtraUtils.PutEpisode (resultIntent, selectedEpisode.Id);
@@ -75,7 +75,7 @@ namespace DrunkAudible.Mobile.Android
             }
             else
             {
-                await AndroidAudioDownloader.StartDownloadAsync (e.Position, selectedEpisode.RemoteURL, ListView);
+                await AndroidAudioDownloader.StartDownloadAsync (e.Position, selectedEpisode.RemoteUrl, ListView);
             }
         }
     }

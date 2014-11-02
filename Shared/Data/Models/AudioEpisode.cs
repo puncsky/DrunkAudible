@@ -26,7 +26,7 @@ namespace DrunkAudible.Data.Models
 
         public String Narrator { get; set; }
 
-        public int PartIndex { get; set; }
+        public int SeqId { get; set; }
 
         public double Price { get; set; }
 
@@ -37,7 +37,7 @@ namespace DrunkAudible.Data.Models
         [Indexed]
         public int Id { get; set; }
 
-        public String RemoteURL { get; set; }
+        public String RemoteUrl { get; set; }
 
         public int FileSize { get; set; }
 
