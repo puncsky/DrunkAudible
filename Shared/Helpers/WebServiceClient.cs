@@ -10,7 +10,7 @@ namespace DrunkAudible.Mobile
 {
     public class WebServiceClient : RestClient
     {
-        const String API_BASE_URL = "https://192.168.1.3:8080/api";
+        const String API_BASE_URL = "https://puncsky.cloudapp.net/api";
 
         public WebServiceClient ()
             : base (API_BASE_URL)
